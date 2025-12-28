@@ -4,164 +4,129 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>لوحة التحكم - نظام زاد</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Cairo', sans-serif; direction: rtl; background-color: #f5f5f5; }
         
-        .header { 
-            background: linear-gradient(135deg, #10b981 0%, #064e3b 100%); 
-            color: white; padding: 20px; display: flex; 
-            justify-content: space-between; align-items: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
+            color: white; padding: 20px; display: flex;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        .header h1 { font-size: 24px; }
         .user-info { display: flex; align-items: center; gap: 15px; }
         
-        .logout-btn { 
-            background: rgba(255,255,255,0.2); border: none; color: white; 
-            padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s; 
+        .logout-btn {
+            background: rgba(255,255,255,0.2); border: none; color: white;
+            padding: 8px 16px; border-radius: 6px; cursor: pointer; transition: 0.3s;
         }
-        .logout-btn:hover { background: rgba(255,255,255,0.4); }
-
+        .logout-btn:hover { background: rgba(255,255,255,0.3); }
+        
         .main-container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         
-        .dashboard-grid { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 25px; margin-bottom: 40px; 
+        .dashboard-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px; margin-bottom: 40px;
         }
         
-        .card { 
-            background: white; border-radius: 12px; padding: 25px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; 
+        .card {
+            background: white; border-radius: 12px; padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;
         }
-        .card:hover { transform: translateY(-5px); }
         
         .card h3 { color: #333; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .card .icon { font-size: 24px; color: #10b981; }
         
-        .stat-num { font-size: 32px; font-weight: bold; color: #10b981; display: block; }
-        .stat-label { font-size: 14px; color: #666; }
-
-        .nav-buttons { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-            gap: 15px; margin-top: 30px; 
+        .stat .number { font-size: 28px; font-weight: bold; color: #10b981; }
+        .stat .label { font-size: 14px; color: #666; }
+        
+        .nav-buttons {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; margin-top: 30px;
         }
         
-        .nav-btn { 
-            background: white; color: #374151; padding: 20px; 
-            border: 1px solid #e5e7eb; border-radius: 12px; 
-            text-decoration: none; display: flex; flex-direction: column;
-            align-items: center; gap: 10px; transition: 0.3s; font-weight: 600;
+        .nav-btn {
+            background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
+            color: white; padding: 15px 20px; border: none;
+            border-radius: 8px; cursor: pointer; transition: transform 0.2s;
+            text-decoration: none; display: flex; align-items: center;
+            justify-content: center; gap: 8px;
         }
-        .nav-btn:hover { 
-            border-color: #10b981; color: #10b981; 
-            transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
-        }
-        .nav-btn i { font-size: 30px; }
+        
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
 
-        .footer-info { margin-top: 40px; text-align: center; color: #9ca3af; font-size: 13px; }
+        .demo-features {
+            background: white; border-radius: 12px; padding: 25px;
+            margin-top: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
-
     <div class="header">
-        <h1>نظام تقييم متطوعي زاد</h1>
+        <h1>لوحة التحكم - نظام زاد</h1>
         <div class="user-info">
-            <span id="welcome-user">جاري التحميل...</span>
-            <button class="logout-btn" onclick="handleLogout()">تسجيل الخروج</button>
+            <span id="welcome-user">مرحباً</span>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
     </div>
     
     <div class="main-container">
         <div class="dashboard-grid">
             <div class="card">
-                <h3><i class="material-icons icon">groups</i> المتطوعين النشطين</h3>
-                <span class="stat-num" id="active-count">--</span>
-                <span class="stat-label">متطوع مسجل حالياً</span>
+                <h3><span class="material-icons icon">people</span>المتطوعين النشطين</h3>
+                <div class="stat"><div class="number">150</div><div class="label">نشط حالياً</div></div>
             </div>
             
             <div class="card">
-                <h3><i class="material-icons icon">fact_check</i> تقييمات الشهر</h3>
-                <span class="stat-num" id="eval-count">--</span>
-                <span class="stat-label">تم الانتهاء منها</span>
+                <h3><span class="material-icons icon">assessment</span>تقييمات الشهر</h3>
+                <div class="stat"><div class="number">87</div><div class="label">مكتملة</div></div>
             </div>
             
             <div class="card">
-                <h3><i class="material-icons icon">warning</i> تنبيهات الأداء</h3>
-                <span class="stat-num" id="alert-count">--</span>
-                <span class="stat-label">تنبيهات تحتاج متابعة</span>
+                <h3><span class="material-icons icon">notifications</span>التنبيهات</h3>
+                <div class="stat"><div class="number">12</div><div class="label">تحتاج متابعة</div></div>
             </div>
         </div>
         
         <div class="nav-buttons">
-            <a href="volunteers.html" class="nav-btn"><i class="material-icons">person_search</i> إدارة المتطوعين</a>
-            <a href="evaluations.html" class="nav-btn"><i class="material-icons">star</i> التقييمات الشهرية</a>
-            <a href="reports.html" class="nav-btn"><i class="material-icons">insights</i> التقارير الذكية</a>
-            <a href="settings.html" class="nav-btn"><i class="material-icons">settings_applications</i> إعدادات النظام</a>
+            <a href="javascript:void(0)" onclick="goToPage('volunteers.html')" class="nav-btn"><span class="material-icons">people</span>إدارة المتطوعين</a>
+            <a href="javascript:void(0)" onclick="goToPage('evaluations.html')" class="nav-btn"><span class="material-icons">assessment</span>التقييمات</a>
+            <a href="javascript:void(0)" onclick="goToPage('reports.html')" class="nav-btn"><span class="material-icons">bar_chart</span>التقارير</a>
+            <a href="javascript:void(0)" onclick="goToPage('settings.html')" class="nav-btn"><span class="material-icons">settings</span>الإعدادات</a>
         </div>
 
-        <div class="footer-info">
-            مؤسسة إنسان الخيرية - مشروع زاد © 2025
+        <div class="demo-features">
+            <h3>مميزات النظام</h3>
+            <p style="color: #666; margin-top: 10px;">نظام إدارة وتقييم متطوعي مشروع زاد - مؤسسة إنسان الخيرية.</p>
         </div>
     </div>
 
     <script>
-        const API_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
+        // التعديل اللي بيمنع الطرد
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user') || 'null');
-
-            // منع الدخول بدون توكن
-            if (!token || token === "undefined") {
-                window.location.replace('./index.html');
-                return;
-            }
-
-            // عرض الاسم
-            if (user) {
-                document.getElementById('welcome-user').textContent = `مرحباً، ${user.full_name}`;
-            }
-
-            // تحميل البيانات
-            fetchData(token);
-        });
-
-        async function fetchData(token) {
-            try {
-                // استدعاء مسار الصحة للتأكد من الربط أولاً
-                const res = await fetch(`${API_URL}/health`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if(res.ok) {
-                    // هنا نضع القيم الافتراضية طالما السيرفر متصل
-                    document.getElementById('active-count').textContent = '150';
-                    document.getElementById('eval-count').textContent = '87';
-                    document.getElementById('alert-count').textContent = '12';
-                }
-            } catch (err) {
-                console.error("Connection Error");
-            }
+        if (!token || token === "undefined") {
+            window.location.replace('./index.html');
+        } else if (user) {
+            document.getElementById('welcome-user').textContent = `مرحباً ${user.full_name}`;
         }
 
-        function handleLogout() {
+        function goToPage(page) {
+            // بنحفظ التوكن تانى كزيادة تأكيد قبل الانتقال
+            localStorage.setItem('token', token);
+            window.location.href = page;
+        }
+
+        function logout() {
             localStorage.clear();
             window.location.replace('./index.html');
         }
-
-        // منع الخروج عند الضغط على أزرار لم تكتمل صفحاتها بعد
-        document.querySelectorAll('.nav-btn').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const target = this.getAttribute('href');
-                if (target === "#" || target === "") {
-                    e.preventDefault();
-                    alert("هذه الصفحة قيد البرمجة حالياً");
-                }
-            });
-        });
     </script>
 </body>
 </html>
