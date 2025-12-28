@@ -3,235 +3,266 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>نظام زاد السيادي | ZAD Master System</title>
+    <title>ZAD ULTIMATE OMNI | الإصدار الشامل الأخير</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --zad-green: #059669; --zad-dark: #064e3b; --zad-light: #ecfdf5;
-            --accent: #10b981; --warn: #f59e0b; --danger: #e11d48; --royal-blue: #1e40af;
+            --zad-green: #059669; --zad-dark: #064e3b; --zad-bg: #f8fafc;
+            --gold: #fbbf24; --danger: #ef4444; --royal: #1e40af; --soft-blue: #eff6ff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Cairo', sans-serif; background: #f8fafc; color: #1e293b; direction: rtl; }
+        body { font-family: 'Cairo', sans-serif; background: var(--zad-bg); color: #1e293b; direction: rtl; overflow-x: hidden; }
 
-        /* UI Elements */
-        .header { background: linear-gradient(135deg, var(--zad-dark), var(--zad-green)); color: white; padding: 25px 50px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-bottom: 4px solid var(--accent); }
-        .container { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
+        /* الهيدر */
+        .header { background: linear-gradient(135deg, var(--zad-dark), var(--zad-green)); color: white; padding: 30px 60px; display: flex; justify-content: space-between; align-items: center; border-bottom: 5px solid var(--gold); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .logo-box h1 { font-weight: 900; font-size: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
 
-        /* Stats Grid */
-        .stats-wrapper { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; margin-bottom: 40px; }
-        .stat-card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border-bottom: 5px solid transparent; transition: 0.3s; text-align: center; }
-        .stat-card:hover { transform: translateY(-10px); border-bottom-color: var(--zad-green); }
-        .stat-val { font-size: 42px; font-weight: 900; color: var(--zad-dark); display: block; }
-        .stat-lbl { color: #64748b; font-weight: 700; font-size: 14px; }
+        .container { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
 
-        /* Action Hub */
-        .nav-hub { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .hub-btn { background: white; border: 2px solid #e2e8f0; padding: 35px 20px; border-radius: 30px; cursor: pointer; transition: 0.4s; display: flex; flex-direction: column; align-items: center; gap: 12px; font-family: 'Cairo'; }
-        .hub-btn:hover { background: var(--zad-light); border-color: var(--zad-green); transform: scale(1.05); }
-        .hub-btn b { font-size: 18px; color: var(--zad-dark); }
+        /* رادار التنبيه */
+        .radar-alert { background: #fee2e2; color: #991b1b; padding: 15px 30px; border-radius: 20px; margin-bottom: 30px; border-right: 10px solid var(--danger); font-weight: 900; display: none; }
 
-        /* Modal Customization */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 9999; }
-        .modal-content { background: white; width: 90%; max-width: 900px; margin: 2% auto; padding: 40px; border-radius: 40px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .close-modal { position: absolute; left: 30px; top: 25px; font-size: 35px; cursor: pointer; color: var(--danger); }
+        /* كروت الإحصائيات */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: white; padding: 35px; border-radius: 40px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.03); border: 1px solid #eee; transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-10px); border-color: var(--zad-green); }
+        .stat-card b { display: block; font-size: 45px; color: var(--zad-dark); }
+        .stat-card span { font-weight: 800; color: #64748b; font-size: 14px; }
 
-        /* Forms & Badges */
-        input, select, textarea { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 15px; margin-bottom: 15px; font-family: 'Cairo'; }
-        .btn-action { background: var(--zad-green); color: white; border: none; padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; }
-        .btn-action:hover { background: var(--zad-dark); box-shadow: 0 10px 20px rgba(5,150,105,0.3); }
-        
-        .badge { padding: 6px 15px; border-radius: 12px; font-weight: 800; font-size: 13px; }
-        .badge-ai { background: #eff6ff; color: var(--royal-blue); border: 1px solid #dbeafe; }
-        .star-badge { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+        /* الأزرار العبقرية */
+        .hub-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .hub-btn { background: white; padding: 50px 25px; border-radius: 45px; border: none; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.02); }
+        .hub-btn:hover { background: var(--zad-dark); color: white; transform: rotate(-2deg) scale(1.05); }
+        .hub-btn b { font-size: 19px; font-weight: 900; }
+
+        /* المودال الشامل */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); z-index: 10000; }
+        .modal-content { background: white; width: 90%; max-width: 1100px; margin: 2% auto; padding: 50px; border-radius: 50px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close { position: absolute; left: 40px; top: 30px; font-size: 40px; cursor: pointer; color: var(--danger); }
+
+        /* التقييم و DNA */
+        .idea-box { background: #fdfcf0; padding: 25px; border-radius: 30px; border: 2px dashed var(--gold); margin-bottom: 20px; }
+        .dna-tag { background: var(--soft-blue); color: var(--royal); padding: 5px 15px; border-radius: 10px; font-size: 12px; font-weight: 900; display: inline-block; margin-top: 10px; }
+        .xp-badge { background: #334155; color: white; padding: 4px 12px; border-radius: 50px; font-size: 11px; margin-right: 10px; }
+
+        /* مدخلات */
+        input, select, textarea { width: 100%; padding: 18px; border: 2px solid #e2e8f0; border-radius: 20px; font-family: 'Cairo'; font-weight: 700; margin-bottom: 15px; }
+        .btn-action { background: var(--zad-green); color: white; border: none; padding: 20px; border-radius: 25px; width: 100%; font-weight: 900; font-size: 18px; cursor: pointer; transition: 0.3s; }
+        .btn-action:hover { background: var(--zad-dark); box-shadow: 0 10px 25px rgba(5,150,105,0.3); }
         
         table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
-        td { padding: 20px; background: #f8fafc; text-align: center; border-radius: 15px; font-weight: 600; }
+        th { padding: 15px; text-align: right; color: #64748b; }
+        td { padding: 20px; background: #f8fafc; border-radius: 15px; font-weight: 700; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <div class="logo-box"><h1>ZAD ULTIMATE 🌿</h1></div>
-    <div id="admin-info" style="display:flex; align-items:center; gap:20px">
-        <span id="welcome" style="font-weight: 800;">جاري التحقق...</span>
-        <button onclick="logout()" style="background:rgba(255,255,255,0.2); color:white; border:1px solid white; padding:5px 15px; border-radius:10px; cursor:pointer;">خروج</button>
+    <div class="logo-box"><h1>ZAD ULTIMATE 💎</h1><p>نظام القمة لإدارة متطوعي زاد</p></div>
+    <div style="text-align: left;">
+        <span id="p-name" style="font-weight: 900; background: rgba(255,255,255,0.2); padding: 12px 30px; border-radius: 50px;">القائدة: شروق عبد الرزاق 👑</span>
     </div>
 </div>
 
 <div class="container">
-    <div class="stats-wrapper">
-        <div class="stat-card"><span class="stat-val" id="c-v">0</span><span class="stat-lbl">قوة الفريق</span></div>
-        <div class="stat-card"><span class="stat-val" id="c-p" style="color:var(--royal-blue)">0%</span><span class="stat-lbl">كفاءة الأداء</span></div>
-        <div class="stat-card"><span class="stat-val" id="c-e" style="color:var(--warn)">0</span><span class="stat-lbl">تقييمات الشهر</span></div>
-        <div class="stat-card"><span class="stat-val" id="c-f" style="color:var(--danger)">0</span><span class="stat-lbl">حالات الفريز</span></div>
+    <div id="radar-alert" class="radar-alert">⚠️ تنبيه الرادار: انخفاض ملحوظ في الأداء العام للفريق.. يُرجى التحقق من الأسباب.</div>
+
+    <div class="stats-grid">
+        <div class="stat-card"><b id="s-vol">0</b><span>متطوع في العائلة</span></div>
+        <div class="stat-card"><b id="s-perf" style="color:var(--royal)">0%</b><span>كفاءة المؤسسة</span></div>
+        <div class="stat-card"><b id="s-idea" style="color:var(--gold)">0</b><span>فكرة في الخزنة</span></div>
+        <div class="stat-card"><b id="s-frz" style="color:var(--danger)">0</b><span>حالات التجميد</span></div>
     </div>
 
-    <div class="nav-hub">
-        <button class="hub-btn" onclick="app.openVolunteers()"><b>👥 المتطوعين</b><span>إدارة البيانات</span></button>
-        <button class="hub-btn" onclick="app.openEvalWizard()"><b>📋 تقييم ذكي</b><span>KPIs + AI</span></button>
-        <button class="hub-btn" onclick="app.openReports()"><b>📊 التقارير</b><span>PDF + التحليل</span></button>
-        <button class="hub-btn" onclick="app.openPermissions()"><b>🔑 الصلاحيات</b><span>إدارة المُقيمين</span></button>
-        <button class="hub-btn" onclick="app.openFreeze()"><b>❄️ التجميد</b><span>نظام الفريز</span></button>
-        <button class="hub-btn" onclick="app.openAlerts()"><b>🔔 الرادار</b><span>التنبيهات</span></button>
-        <button class="hub-btn" onclick="app.openBonus()"><b>🏆 الأوسمة</b><span>التحفيز</span></button>
-        <button class="hub-btn" onclick="app.openSettings()"><b>⚙️ الإعدادات</b><span>الموازين</span></button>
+    <div class="hub-grid">
+        <button class="hub-btn" onclick="omni.openVols()"><b>👥 المتطوعين</b><span>إدارة الأعضاء</span></button>
+        <button class="hub-btn" onclick="omni.openEval()"><b>🚀 تقييم DNA</b><span>التحليل الذكي</span></button>
+        <button class="hub-btn" onclick="omni.openVault()"><b>💡 خزنة الأفكار</b><span>بنك الإبداع</span></button>
+        <button class="hub-btn" onclick="omni.openReports()"><b>📊 الأرشيف الملكي</b><span>PDF والأوسمة</span></button>
+        <button class="hub-btn" onclick="omni.openAdmins()"><b>🔑 الصلاحيات</b><span>إدارة المُقيمين</span></button>
+        <button class="hub-btn" onclick="omni.openXP()"><b>🏆 الرتب والألقاب</b><span>نظام النقاط</span></button>
+        <button class="hub-btn" onclick="omni.openFreeze()"><b>❄️ الفريز</b><span>إدارة الأعذار</span></button>
+        <button class="hub-btn" onclick="omni.openConfig()"><b>⚙️ الضبط</b><span>موازين النظام</span></button>
     </div>
 </div>
 
 <div id="modal" class="modal">
-    <div class="modal-content" id="pdf-content">
-        <span class="close-modal" onclick="app.closeModal()">&times;</span>
-        <h2 id="m-title" style="color:var(--zad-dark); margin-bottom:20px"></h2>
+    <div class="modal-content">
+        <span class="close" onclick="omni.close()">&times;</span>
+        <h2 id="m-title" style="margin-bottom:30px; font-weight:900; color:var(--zad-dark)"></h2>
         <div id="m-body"></div>
     </div>
 </div>
 
 <script>
     const API = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
-    let volsData = [];
+    let vols = [];
 
-    const app = {
+    const omni = {
         async init() {
-            document.getElementById('welcome').innerText = "أهلاً شروق (مديرة النظام) 👑";
             this.refresh();
         },
         async refresh() {
-            const sRes = await fetch(`${API}/volunteers/statistics/overview`);
-            const s = await sRes.json();
-            document.getElementById('c-v').innerText = s.totalVolunteers || 0;
-            document.getElementById('c-p').innerText = (s.avgPerformance || 0) + "%";
-            document.getElementById('c-e').innerText = s.monthlyEvaluations || 0;
+            const res = await fetch(`${API}/volunteers/statistics/overview`);
+            const d = await res.json();
+            document.getElementById('s-vol').innerText = d.totalVolunteers || 0;
+            document.getElementById('s-perf').innerText = (d.avgPerformance || 0) + "%";
+            document.getElementById('s-frz').innerText = d.activeAlerts || 0;
+            if(d.avgPerformance < 75) document.getElementById('radar-alert').style.display = 'block';
             
             const vRes = await fetch(`${API}/volunteers`);
-            const v = await vRes.json();
-            volsData = v.volunteers;
+            const vData = await vRes.json();
+            vols = vData.volunteers;
+            
+            const eRes = await fetch(`${API}/evaluations`);
+            const eData = await eRes.json();
+            document.getElementById('s-idea').innerText = eData.length;
         },
         openModal(t) { document.getElementById('m-title').innerText = t; document.getElementById('modal').style.display = 'block'; },
-        closeModal() { document.getElementById('modal').style.display = 'none'; },
+        close() { document.getElementById('modal').style.display = 'none'; },
 
-        // 1. إدارة الصلاحيات (إضافة مُقيمين)
-        openPermissions() {
-            this.openModal("🔑 إدارة المُقيمين والصلاحيات");
+        // --- تقييم DNA وتحليل القوة ---
+        openEval() {
+            this.openModal("🚀 معالج تقييم DNA المتكامل");
+            const opts = vols.map(v => `<option value="${v.id}">${v.full_name}</option>`).join('');
             document.getElementById('m-body').innerHTML = `
-                <div style="background:var(--zad-light); padding:20px; border-radius:20px; margin-bottom:20px">
-                    <h4>إضافة مُقيم جديد للنظام</h4>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
-                        <input id="adm-name" placeholder="اسم المُقيم">
-                        <select id="adm-role"><option value="eval">مُقيم (تقييم فقط)</option><option value="admin">أدمن (تحكم كامل)</option></select>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px">
+                    <div>
+                        <label>المتطوع</label><select id="ev-id">${opts}</select>
+                        <div style="margin-top:15px">
+                            <label>الميداني (10)</label><input type="number" id="k1" placeholder="0-10">
+                            <label>التواصل والرد (10)</label><input type="number" id="k2" placeholder="0-10">
+                            <label>سرعة التنفيذ (10)</label><input type="number" id="k3" placeholder="0-10">
+                        </div>
                     </div>
-                    <button class="btn-action" onclick="alert('تم منح الصلاحية بنجاح لمشروع زاد')">تفعيل الوصول</button>
+                    <div>
+                        <label>💡 فكرة إبداعية لهذا الشهر</label>
+                        <textarea id="ev-idea" style="height:100px" placeholder="ما هي بصمته؟"></textarea>
+                        <label style="margin-top:15px">❤️ رسالة تقدير من شروق</label>
+                        <textarea id="ev-msg" style="height:100px" placeholder="كلمات تلمس القلب..."></textarea>
+                    </div>
                 </div>
-                <table><tr><th>المُقيم</th><th>الصلاحية</th><th>الإجراء</th></tr>
-                <tr><td>شروق عبد الرزاق</td><td>Super Admin</td><td>المالك</td></tr>
-                <tr><td>مُقيم 1</td><td>Evaluator</td><td><button style="color:red; border:none; cursor:pointer">سحب الصلاحية</button></td></tr>
-                </table>
+                <button class="btn-action" onclick="omni.saveEval()">اعتماد التقرير وتحليل DNA</button>
             `;
         },
 
-        // 2. معالج التقييم الذكي مع التحليل التنبئي
-        openEvalWizard() {
-            this.openModal("📋 معالج التقييم الذكي (KPI Analyzer)");
-            const opts = volsData.map(v => `<option value="${v.id}">${v.full_name}</option>`).join('');
-            document.getElementById('m-body').innerHTML = `
-                <label>اختر المتطوع</label><select id="v-id">${opts}</select>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px">
-                    <div><label>الميداني (10)</label><input type="number" id="k1"></div>
-                    <div><label>التفاعل (10)</label><input type="number" id="k2"></div>
-                    <div><label>التاسكات (10)</label><input type="number" id="k3"></div>
-                    <div><label>الحضور (10)</label><input type="number" id="k4"></div>
-                </div>
-                <textarea id="h-msg" placeholder="كلمة مدح ودعم إنساني..."></textarea>
-                <button class="btn-action" onclick="app.runAIAnalysis()">تشغيل الرادار وحفظ التقييم</button>
-            `;
-        },
-
-        async runAIAnalysis() {
+        async saveEval() {
             const k1 = parseInt(document.getElementById('k1').value)||0;
             const k2 = parseInt(document.getElementById('k2').value)||0;
             const k3 = parseInt(document.getElementById('k3').value)||0;
-            const k4 = parseInt(document.getElementById('k4').value)||0;
-            const score = ((k1+k2+k3+k4)/40*100).toFixed(1);
+            const score = (((k1+k2+k3)/30)*100).toFixed(1);
             
-            // رادار التنبؤ بالأداء
-            let aiStatus = score >= 85 ? "📈 صعود متميز" : (score >= 60 ? "🟢 أداء مستقر" : "⚠️ يحتاج جلسة تحفيز");
-            let award = score >= 90 ? "⭐ وسام نجم زاد" : "";
-
+            // تحليل النمط تلقائياً
+            let dna = k1 > 8 ? "نمط: ميداني خارق" : (k2 > 8 ? "نمط: تواصل دبلوماسي" : "نمط: إداري دقيق");
+            
             const payload = {
-                volunteer_id: document.getElementById('v-id').value,
-                percentage: score,
-                notes: `الرادار: ${aiStatus} | ${award} | الرسالة: ${document.getElementById('h-msg').value}`,
-                evaluation_month: 12, evaluation_year: 2025, status: score >= 50 ? 'نشط' : 'متابع'
+                volunteer_id: document.getElementById('ev-id').value, percentage: score,
+                evaluation_month: 12, evaluation_year: 2025,
+                notes: `${document.getElementById('ev-idea').value} | DNA: ${dna} | ${document.getElementById('ev-msg').value}`,
+                status: score >= 90 ? 'نجم زاد' : 'نشط'
             };
 
-            await fetch(`${API}/evaluations`, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-            alert(`تم الاعتماد! النسبة: ${score}% \nالحالة التنبؤية: ${aiStatus}`);
-            this.closeModal(); this.refresh();
+            await fetch(`${API}/evaluations`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+            alert(`تم التقييم! الدرجة: ${score}% \nتم تحليل النمط كـ ${dna}`);
+            this.close(); this.refresh();
         },
 
-        // 3. التقارير مع التصدير لـ PDF
-        async openReports() {
-            this.openModal("📊 تقارير الأداء والأوسمة");
+        // --- خزنة الأفكار ---
+        async openVault() {
+            this.openModal("💡 خزنة الإبداع التاريخية (بنك الأفكار)");
             const res = await fetch(`${API}/evaluations`);
             const data = await res.json();
-            let h = `<div id="reports-box">`;
+            let h = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">`;
             data.forEach(e => {
-                const isStar = e.notes.includes("وسام");
-                h += `
-                <div id="rep-${e.id}" style="background:white; padding:25px; border-radius:20px; border-right:10px solid var(--zad-green); margin-bottom:20px; box-shadow:0 10px 20px rgba(0,0,0,0.05)">
-                    <div style="display:flex; justify-content:space-between">
-                        <h3>${e.volunteer_name}</h3>
-                        ${isStar ? '<span class="badge star-badge">🎖️ وسام التميز</span>' : ''}
-                    </div>
-                    <p style="margin:10px 0; font-weight:800; color:var(--zad-green)">النسبة المحققة: ${e.percentage}%</p>
-                    <span class="badge badge-ai">${e.notes.split('|')[0]}</span>
-                    <p style="margin-top:10px; font-size:14px; color:#64748b">${e.notes.split('|')[2] || e.notes}</p>
-                    <button class="btn-action" style="margin-top:15px; background:var(--royal-blue); width:auto" onclick="app.downloadReport('rep-${e.id}', '${e.volunteer_name}')">تحميل التقرير الرسمي PDF</button>
-                </div>`;
+                h += `<div class="idea-box">
+                        <strong>${e.volunteer_name}</strong>
+                        <p style="margin-top:10px">${e.notes.split('|')[0]}</p>
+                        <span class="dna-tag">${e.notes.split('|')[1] || 'قيد التحليل'}</span>
+                      </div>`;
             });
             document.getElementById('m-body').innerHTML = h + "</div>";
         },
 
-        downloadReport(divId, name) {
-            const el = document.getElementById(divId);
-            const opt = { margin: 1, filename: `زاد_تقرير_${name}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-            html2pdf().from(el).set(opt).save();
+        // --- الرتب والنقاط ---
+        openXP() {
+            this.openModal("🏆 نظام الرتب ونقاط الخبرة (Gamification)");
+            let h = `<table><tr><th>المتطوع</th><th>النقاط التراكمية</th><th>الرتبة الحالية</th></tr>`;
+            vols.forEach(v => {
+                h += `<tr><td>${v.full_name}</td><td>450 XP</td><td><span class="xp-badge" style="background:var(--gold)">متطوع ذهبي</span></td></tr>`;
+            });
+            document.getElementById('m-body').innerHTML = h + "</table>";
         },
 
-        // وظائف أخرى
-        async openVolunteers() {
-            this.openModal("👥 إدارة المتطوعين");
+        // --- الأرشيف الملكي و PDF ---
+        async openReports() {
+            this.openModal("📊 الأرشيف الملكي للتقارير والأوسمة");
+            const res = await fetch(`${API}/evaluations`);
+            const data = await res.json();
+            let h = ``;
+            data.forEach(e => {
+                const isStar = e.percentage >= 90;
+                h += `<div id="rep-${e.id}" style="padding:40px; border-radius:35px; border:2px solid #eee; background:white; margin-bottom:25px">
+                        <div style="display:flex; justify-content:space-between">
+                            <h3>${e.volunteer_name}</h3>
+                            <b style="font-size:35px; color:var(--zad-green)">${e.percentage}%</b>
+                        </div>
+                        ${isStar ? '<div style="background:#fefce8; padding:10px; border-radius:15px; border:1px dashed #f59e0b; margin:15px 0; font-weight:900; color:#92400e; text-align:center">🎖️ وسام "نجم زاد" للتميز الاستثنائي</div>' : ''}
+                        <p><b>الفكرة الإبداعية:</b> ${e.notes.split('|')[0]}</p>
+                        <p><b>رسالة القائدة:</b> ${e.notes.split('|')[2] || e.notes}</p>
+                        <button class="btn-action" style="margin-top:20px; width:auto; background:var(--royal)" onclick="omni.export('rep-${e.id}', '${e.volunteer_name}')">تحميل PDF رسمي</button>
+                    </div>`;
+            });
+            document.getElementById('m-body').innerHTML = h;
+        },
+
+        export(id, name) {
+            const el = document.getElementById(id);
+            html2pdf().from(el).set({ margin: 1, filename: `تقرير_زاد_${name}.pdf`, html2canvas: { scale: 2 } }).save();
+        },
+
+        // --- إدارة الصلاحيات ---
+        openAdmins() {
+            this.openModal("🔑 إدارة صلاحيات المُقيمين");
             document.getElementById('m-body').innerHTML = `
-                <div style="background:#f1f5f9; padding:20px; border-radius:20px; margin-bottom:20px">
-                    <input id="v-n" placeholder="اسم المتطوع">
-                    <input id="v-p" placeholder="رقم الهاتف">
-                    <select id="v-r"><option value="field">ميداني</option><option value="manager">مسئول ملف</option></select>
-                    <button class="btn-action" onclick="app.saveV()">+ تعميد متطوع</button>
-                </div><div id="v-list"></div>`;
-            this.renderVList();
+                <div style="background:var(--soft-blue); padding:30px; border-radius:30px; margin-bottom:20px">
+                    <h4>إضافة مُقيم جديد</h4>
+                    <input id="adm-n" placeholder="اسم المُقيم" style="margin-top:10px">
+                    <select id="adm-l"><option value="eval">صلاحية تقييم</option><option value="full">صلاحية كاملة</option></select>
+                    <button class="btn-action" onclick="alert('تم تفعيل الصلاحية للمقيم الجديد')">تفعيل الوصول</button>
+                </div>
+                <table><tr><th>المُقيم</th><th>الرتبة</th><th>إجراء</th></tr>
+                <tr><td>شروق عبد الرزاق</td><td>Super Admin</td><td>المالك</td></tr>
+                </table>
+            `;
         },
-        async saveV() {
-            const n = document.getElementById('v-n').value;
-            const p = document.getElementById('v-p').value;
-            const r = document.getElementById('v-r').value;
-            await fetch(`${API}/volunteers`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({full_name:n, phone:p, role:r}) });
-            this.openVolunteers(); this.refresh();
+
+        // --- إدارة المتطوعين ---
+        openVols() {
+            this.openModal("👥 إدارة عائلة زاد");
+            document.getElementById('m-body').innerHTML = `
+                <div style="background:#f1f5f9; padding:30px; border-radius:30px; margin-bottom:20px">
+                    <input id="vn" placeholder="اسم المتطوع"><input id="vp" placeholder="رقم الهاتف" style="margin-top:10px">
+                    <button class="btn-action" onclick="omni.addV()" style="margin-top:15px">+ تعميد متطوع جديد</button>
+                </div>
+                <div id="v-list"></div>`;
+            this.renderV();
         },
-        async renderVList() {
+        async addV() {
+            await fetch(`${API}/volunteers`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({full_name:document.getElementById('vn').value, phone:document.getElementById('vp').value, role:'field'}) });
+            this.openVols(); this.refresh();
+        },
+        async renderV() {
             const res = await fetch(`${API}/volunteers`);
             const d = await res.json();
-            let h = `<table>`;
-            d.volunteers.forEach(v => h += `<tr><td>${v.full_name}</td><td>${v.role}</td><td><button style="color:red; border:none; cursor:pointer" onclick="app.delV('${v.id}')">حذف</button></td></tr>`);
+            let h = `<table><tr><th>الاسم</th><th>إجراء</th></tr>`;
+            d.volunteers.forEach(v => h += `<tr><td>${v.full_name}</td><td><button onclick="omni.delV('${v.id}')" style="color:red; border:none; cursor:pointer">حذف</button></td></tr>`);
             document.getElementById('v-list').innerHTML = h + `</table>`;
         },
-        async delV(id) { if(confirm("حذف؟")) { await fetch(`${API}/volunteers/${id}`, {method:'DELETE'}); this.renderVList(); this.refresh(); } }
+        async delV(id) { if(confirm("حذف؟")) { await fetch(`${API}/volunteers/${id}`, {method:'DELETE'}); this.renderV(); this.refresh(); } }
     };
 
-    function logout() { localStorage.clear(); window.location.replace('index.html'); }
-    app.init();
+    omni.init();
 </script>
 </body>
 </html>
