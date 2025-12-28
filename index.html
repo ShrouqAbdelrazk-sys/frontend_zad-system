@@ -2,140 +2,161 @@
 <html dir="rtl" lang="ar">
 <head>
     <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10b981" />
+    <meta name="description" content="نظام تقييم متطوعي مشروع زاد - Zad Volunteer Evaluation System" />
     <title>نظام تقييم متطوعي مشروع زاد</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     
     <style>
-        :root { --main-green: #10b981; --dark-green: #064e3b; --soft-green: #ecfdf5; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            background: linear-gradient(135deg, var(--dark-green) 0%, var(--main-green) 100%);
+            font-family: 'Cairo', 'Roboto', sans-serif;
+            direction: rtl;
+            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
             min-height: 100vh;
-            display: flex; align-items: center; justify-content: center; padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
         
-        .login-card {
-            background: white; border-radius: 24px; padding: 40px;
-            width: 100%; max-width: 450px; text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
         }
         
-        .logo-box {
-            width: 80px; height: 80px; background: var(--main-green);
-            border-radius: 50%; margin: 0 auto 20px;
+        .logo {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            margin: 0 auto 20px;
             display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 28px; font-weight: 800;
-            box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+            color: white; font-size: 32px; font-weight: bold;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
         
-        h1 { color: #1f2937; font-size: 24px; margin-bottom: 8px; }
-        .org-name { color: #6b7280; font-size: 14px; margin-bottom: 30px; }
+        h1 { color: #1f2937; margin-bottom: 10px; font-size: 24px; font-weight: 700; }
+        .subtitle { color: #6b7280; margin-bottom: 30px; font-size: 14px; line-height: 1.6; }
         
-        .input-group { text-align: right; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #374151; }
+        .form-group { margin-bottom: 20px; text-align: right; }
+        label { display: block; margin-bottom: 8px; color: #374151; font-weight: 600; }
         
         input {
-            width: 100%; padding: 14px; border: 2px solid #e5e7eb; border-radius: 12px;
-            font-size: 16px; transition: 0.3s; text-align: left; direction: ltr;
+            width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px;
+            font-size: 16px; transition: all 0.3s; direction: ltr; text-align: left;
         }
         
-        input:focus { outline: none; border-color: var(--main-green); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+        input:focus { outline: none; border-color: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
         
-        .btn-login {
-            width: 100%; padding: 14px; background: var(--main-green); color: white;
-            border: none; border-radius: 12px; font-size: 17px; font-weight: 700;
-            cursor: pointer; transition: 0.3s; margin-top: 10px;
+        .btn {
+            width: 100%; padding: 14px; background: #10b981; color: white;
+            border: none; border-radius: 10px; font-size: 16px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s; margin-top: 10px;
         }
         
-        .btn-login:hover { background: #059669; transform: translateY(-2px); }
+        .btn:hover { background: #059669; transform: translateY(-2px); }
         
-        .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; display: none; font-size: 14px; }
-        .error { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
-        .success { background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
+        .status { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; display: none; }
+        .status.error { background-color: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
+        .status.success { background-color: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
         
-        .features-list {
-            margin-top: 30px; padding-top: 20px; border-top: 1px solid #f3f4f6; text-align: right;
+        .features { margin-top: 30px; text-align: right; border-top: 1px solid #f3f4f6; padding-top: 20px; }
+        .features h3 { color: #1f2937; font-size: 16px; margin-bottom: 15px; }
+        .feature { margin: 10px 0; color: #4b5563; font-size: 14px; display: flex; align-items: center; }
+        .feature::before { content: "check_circle"; font-family: 'Material Icons'; color: #10b981; font-size: 18px; margin-left: 8px; }
+        
+        .demo-note {
+            margin-top: 25px; padding: 15px; background-color: #f9fafb;
+            border-radius: 10px; border-right: 4px solid #10b981; text-align: right;
         }
-        .feature-item { display: flex; align-items: center; margin-bottom: 10px; color: #4b5563; font-size: 13px; }
-        .feature-item i { color: var(--main-green); margin-left: 10px; font-size: 18px; }
-        
-        .footer-note { margin-top: 25px; font-size: 12px; color: #9ca3af; line-height: 1.5; }
+        .demo-note h3 { color: #059669; font-size: 15px; margin-bottom: 5px; }
+        .demo-note p { color: #6b7280; font-size: 13px; }
     </style>
 </head>
 <body>
-
-    <div class="login-card">
-        <div class="logo-box">ZAD</div>
-        <h1>نظام تقييم متطوعي زاد</h1>
-        <p class="org-name">مؤسسة إنسان الخيرية - مشهرة برقم 63</p>
+    <div class="container">
+        <div class="logo">ZAD</div>
+        <h1>نظام تقييم متطوعي مشروع زاد</h1>
+        <p class="subtitle">مشروع زاد التابع لمؤسسة انسان الخيرية المشهرة برقم 63</p>
         
         <form id="loginForm">
-            <div class="input-group">
+            <div class="form-group">
                 <label>البريد الإلكتروني</label>
-                <input type="email" id="email" required placeholder="admin@zad.org">
+                <input type="email" id="email" required value="admin@zad.org">
             </div>
-            <div class="input-group">
+            <div class="form-group">
                 <label>كلمة المرور</label>
-                <input type="password" id="password" required placeholder="••••••••">
+                <input type="password" id="password" required value="admin123">
             </div>
-            <button type="submit" class="btn-login">تسجيل الدخول</button>
+            <button type="submit" class="btn">تسجيل الدخول</button>
         </form>
         
-        <div id="status" class="status-msg"></div>
+        <div id="status" class="status"></div>
         
-        <div class="features-list">
-            <div class="feature-item"><i class="material-icons">verified</i> إدارة ملفات المتطوعين</div>
-            <div class="feature-item"><i class="material-icons">verified</i> تقييم الأداء الشهري والمكافآت</div>
-            <div class="feature-item"><i class="material-icons">verified</i> تقارير إحصائية متقدمة</div>
+        <div class="features">
+            <h3>المميزات الرئيسية للنظام</h3>
+            <div class="feature">إدارة شاملة للمتطوعين</div>
+            <div class="feature">نظام التقييم الشهري المتقدم</div>
+            <div class="feature">نظام التجميد والمكافآت</div>
+            <div class="feature">التقارير والإحصائيات الذكية</div>
         </div>
-        
-        <p class="footer-note">هذا النظام مخصص لمشروع زاد فقط. لا يتم منح صلاحيات الدخول إلا بقرار من الإدارة.</p>
+
+        <div class="demo-note">
+            <h3>ملاحظة هامة</h3>
+            <p>هذا النظام مخصص لاستخدام إدارة مشروع زاد فقط. يرجى التواصل مع الإدارة للحصول على صلاحيات الدخول.</p>
+        </div>
     </div>
 
     <script>
-        // الرابط المباشر للباك إيند على Koyeb
-        const API_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api/auth/login';
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        // رابط السيرفر الحقيقي الخاص بكِ في Koyeb
+        const API_BASE_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
+        
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const status = document.getElementById('status');
+            const statusDiv = document.getElementById('status');
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
-            status.style.display = 'block';
-            status.className = 'status-msg';
-            status.textContent = 'جاري التحقق من الهوية...';
-
+            
+            statusDiv.style.display = 'block';
+            statusDiv.className = 'status';
+            statusDiv.textContent = 'جاري تسجيل الدخول...';
+            
             try {
-                const response = await fetch(API_URL, {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-
+                
                 const data = await response.json();
-
+                
                 if (response.ok) {
-                    status.className = 'status-msg success';
-                    status.textContent = `مرحباً ${data.user.full_name}! تم تسجيل الدخول بنجاح.`;
-                    
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `مرحباً ${data.user.full_name}! تم تسجيل الدخول بنجاح`;
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-
-                    setTimeout(() => {
-                        window.location.href = './dashboard.html';
-                    }, 1000);
+                    setTimeout(() => { window.location.href = './dashboard.html'; }, 1500);
                 } else {
-                    status.className = 'status-msg error';
-                    status.innerHTML = `خطأ: ${data.message} <br> <small>${data.detail || ''}</small>`;
+                    statusDiv.className = 'status error';
+                    statusDiv.textContent = data.message || 'خطأ في بيانات الدخول';
                 }
             } catch (error) {
-                status.className = 'status-msg error';
-                status.textContent = 'تعذر الاتصال بالسيرفر. تأكدي أن الباك إيند في حالة Healthy.';
+                // لو السيرفر مطلع 500 أو مش شغال، الرسالة دي هتظهر
+                statusDiv.className = 'status error';
+                statusDiv.textContent = 'خطأ داخلي في الخادم - تأكدي من إعدادات DATABASE_URL في Koyeb';
             }
         });
-    
+    </script>
+</body>
+</html>
