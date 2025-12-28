@@ -3,377 +3,397 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ZAD Altimate | 2026 System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <title>ZAD Altimate | نظام إدارة مشروع زاد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
             --primary: #10b981; /* أخضر زاد */
-            --primary-dark: #047857;
-            --secondary: #1e293b; /* كحلي للقوائم */
-            --bg: #f3f4f6;
+            --secondary: #1e293b; /* كحلي */
+            --bg: #f8fafc;
             --white: #ffffff;
             --danger: #ef4444;
-            --warning: #f59e0b;
-            --text: #374151;
+            --text: #334155;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; outline: none; }
-        body { background: var(--bg); color: var(--text); height: 100vh; display: flex; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* --- 1. Sidebar (القائمة الجانبية) --- */
-        .sidebar {
-            width: 260px; background: var(--secondary); color: white; display: flex; flex-direction: column;
-            padding: 20px; transition: 0.3s; box-shadow: 2px 0 10px rgba(0,0,0,0.1); flex-shrink: 0; z-index: 100;
-        }
-        .logo { font-size: 22px; font-weight: 900; color: var(--primary); margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
-        .nav-btn {
-            padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; gap: 12px; color: #cbd5e1; font-weight: 600;
-        }
-        .nav-btn:hover, .nav-btn.active { background: var(--primary); color: white; transform: translateX(-5px); }
-        .nav-icon { width: 20px; text-align: center; }
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--secondary); color: white; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 100; }
+        .logo { font-size: 24px; font-weight: 900; color: var(--primary); margin-bottom: 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+        .nav-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #cbd5e1; font-weight: 600; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; transform: translateX(-5px); }
 
-        /* --- 2. Main Area (منطقة العمل) --- */
+        /* Main Content */
         .main { flex: 1; overflow-y: auto; padding: 30px; position: relative; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
         .page-title { font-size: 26px; font-weight: 800; color: var(--secondary); }
-        .btn-main {
-            background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px;
-            font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;
-        }
-        .btn-main:hover { background: var(--primary-dark); }
-        .btn-danger { background: var(--danger); color: white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;}
-
-        /* --- 3. Cards & Stats --- */
-        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card-stat { background: white; padding: 20px; border-radius: 12px; border-right: 4px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .card-stat h3 { font-size: 14px; color: #6b7280; }
-        .card-stat .val { font-size: 24px; font-weight: 900; color: var(--secondary); margin-top: 5px; }
-
-        /* --- 4. Tables & Lists --- */
-        .box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; min-width: 600px; }
-        th { text-align: right; padding: 15px; background: #f8fafc; color: #475569; font-size: 13px; font-weight: 800; }
-        td { padding: 15px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
         
-        /* --- 5. Forms & Inputs --- */
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 700; font-size: 13px; color: var(--secondary); }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; transition: 0.2s; background: #fff; }
-        input:focus { border-color: var(--primary); ring: 2px solid var(--primary); }
+        /* Dashboard Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 15px; border-right: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .stat-card h3 { font-size: 14px; color: #64748b; }
+        .stat-card .val { font-size: 28px; font-weight: 900; margin-top: 5px; color: var(--secondary); }
 
-        /* --- 6. Pages Logic --- */
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
-
-        /* --- 7. Smart Elements (Badges, Alerts) --- */
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
-        .badge-gold { background: #fef3c7; color: #d97706; }
-        .badge-silver { background: #f1f5f9; color: #475569; }
-        .badge-green { background: #dcfce7; color: #166534; }
-        .badge-red { background: #fee2e2; color: #991b1b; }
+        /* Content Boxes */
+        .box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
         
-        .alert-box { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-right: 4px solid var(--danger); display: flex; align-items: center; gap: 10px; }
+        /* Form Styling */
+        .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 700; color: var(--secondary); font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: #fff; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
 
-        /* --- 8. Modal System --- */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 90%; max-width: 500px; padding: 30px; border-radius: 15px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 800; font-size: 18px; }
-        .close-btn { cursor: pointer; color: #9ca3af; font-size: 24px; }
+        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #fee2e2; color: var(--danger); font-size: 12px; }
 
-        /* --- 9. Heatmap Grid --- */
-        .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .heat-item { padding: 20px; border-radius: 10px; text-align: center; border: 1px solid rgba(0,0,0,0.05); }
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: right; background: #f8fafc; padding: 15px; font-size: 13px; color: #64748b; border-bottom: 2px solid #edf2f7; }
+        td { padding: 15px; border-bottom: 1px solid #edf2f7; font-size: 14px; }
 
+        /* Visibility of Sections */
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+
+        /* Modals */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .modal-content { background: white; width: 500px; padding: 30px; border-radius: 20px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); }
+
+        .alert-banner { background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 5px solid var(--danger); display: none; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="logo">⚡ ZAD Altimate</div>
-    <div class="nav-btn active" onclick="app.nav('dashboard')"><span class="nav-icon">📊</span> لوحة القيادة</div>
-    <div class="nav-btn" onclick="app.nav('volunteers')"><span class="nav-icon">👥</span> المتطوعين</div>
-    <div class="nav-btn" onclick="app.nav('evaluation')"><span class="nav-icon">📝</span> التقييم الشهري</div>
-    <div class="nav-btn" onclick="app.nav('criteria')"><span class="nav-icon">⚙️</span> إدارة المعايير</div>
-    <div class="nav-btn" onclick="app.nav('heatmap')"><span class="nav-icon">🔥</span> الخريطة الحرارية</div>
-    <div class="nav-btn" onclick="app.nav('vault')"><span class="nav-icon">💡</span> بنك الأفكار</div>
-    <div class="nav-btn" onclick="app.nav('settings')"><span class="nav-icon">🔒</span> الإعدادات</div>
+    <div class="logo">ZAD Altimate</div>
+    <div class="nav-item active" onclick="app.showPage('dash')">📊 الرئيسية</div>
+    <div class="nav-item" onclick="app.showPage('vols')">👥 المتطوعين</div>
+    <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقارير</div>
+    <div class="nav-item" onclick="app.showPage('crit')">⚙️ المعايير</div>
+    <div class="nav-item" onclick="app.showPage('vault')">💡 بنك الأفكار</div>
 </div>
 
 <div class="main">
-
-    <div id="view-dashboard" class="view-section active">
+    
+    <div id="page-dash" class="page-section active">
         <div class="header">
-            <h1 class="page-title">مرحباً، شروق (Admin)</h1>
-            <div style="font-size:14px; color:#6b7280" id="date-display"></div>
+            <h1 class="page-title">لوحة القيادة</h1>
+            <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع سريع</button>
         </div>
 
-        <div class="grid-stats">
-            <div class="card-stat"><h3>إجمالي المتطوعين</h3><div class="val" id="st-vol-count">0</div></div>
-            <div class="card-stat"><h3>في حالة (Freeze)</h3><div class="val" id="st-freeze-count">0</div></div>
-            <div class="card-stat"><h3>تقييمات هذا الشهر</h3><div class="val" id="st-eval-count">0</div></div>
-            <div class="card-stat"><h3>أفكار إبداعية</h3><div class="val" id="st-idea-count">0</div></div>
+        <div id="smart-alert" class="alert-banner">⚠️ تنبيه: يوجد متطوعين لم يتم تقييمهم منذ فترة أو أداؤهم منخفض.</div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><h3>إجمالي المتطوعين</h3><div class="val" id="st-vols">0</div></div>
+            <div class="stat-card"><h3>حالات الفريز</h3><div class="val" id="st-freeze">0</div></div>
+            <div class="stat-card"><h3>تقييمات الشهر</h3><div class="val" id="st-evals">0</div></div>
+            <div class="stat-card"><h3>أفكار مسجلة</h3><div class="val" id="st-ideas">0</div></div>
         </div>
 
-        <div id="alerts-area"></div> <div class="box">
-            <h3>📌 الوصول السريع</h3>
-            <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap">
-                <button class="btn-main" onclick="app.openModal('modal-add-vol')">+ إضافة متطوع</button>
-                <button class="btn-main" style="background:var(--secondary)" onclick="app.nav('evaluation')">بدء التقييم</button>
-                <button class="btn-main" style="background:#f59e0b" onclick="app.nav('vault')">الأفكار</button>
-            </div>
+        <div class="box">
+            <h3 style="margin-bottom:15px">📌 ملاحظات إنسانية تراكمية</h3>
+            <div id="praise-wall" style="display:flex; flex-wrap:wrap; gap:10px">
+                </div>
         </div>
     </div>
 
-    <div id="view-volunteers" class="view-section">
+    <div id="page-vols" class="page-section">
         <div class="header">
-            <h1 class="page-title">سجل المتطوعين (Database)</h1>
-            <button class="btn-main" onclick="app.openModal('modal-add-vol')">إضافة متطوع</button>
+            <h1 class="page-title">إدارة المتطوعين</h1>
+            <button class="btn btn-primary" onclick="app.openModal('modal-vol')">إضافة متطوع</button>
         </div>
         <div class="box">
-            <div id="volunteers-table"></div>
+            <div id="vols-table-container"></div>
         </div>
     </div>
 
-    <div id="view-evaluation" class="view-section">
-        <div class="header">
-            <h1 class="page-title">التقييم الشهري</h1>
-        </div>
+    <div id="page-eval" class="page-section">
+        <div class="header"><h1 class="page-title">نظام التقييم الذكي</h1></div>
         
-        <div class="box" style="margin-bottom:20px">
-            <label>اختر المتطوع لتقييمه:</label>
-            <select id="eval-vol-select" onchange="app.loadEvalForm()"></select>
-        </div>
-
-        <div id="eval-form-container" class="box" style="display:none">
-            <div id="freeze-warning" class="alert-box" style="display:none">⚠️ هذا المتطوع في حالة تجميد (Freeze). التقييم اختياري.</div>
+        <div class="box">
+            <label>اختر المتطوع لبدء التقييم:</label>
+            <select id="eval-vol-select" onchange="app.loadEvalFields()"></select>
             
-            <h3 style="margin-bottom:15px; color:var(--primary)">📋 بنود التقييم (الأساسية والمسئولية)</h3>
-            <div id="dynamic-criteria-inputs"></div> <hr style="margin:20px 0; border-color:#e5e7eb">
-            
-            <div class="form-row">
-                <div><label>💡 الكريتيفيتي (فكرة للشهر)</label><textarea id="eval-idea" placeholder="سجل الفكرة هنا للحفظ في بنك الأفكار"></textarea></div>
-                <div><label>💬 مدح إنساني (للدعم النفسي)</label><textarea id="eval-praise" placeholder="رسالة تظهر في التقرير لرفع المعنويات"></textarea></div>
+            <div id="eval-form-body" style="display:none; margin-top:20px; border-top:1px solid #eee; padding-top:20px;">
+                <div id="freeze-notice" style="color:red; font-weight:700; margin-bottom:15px; display:none">❄️ هذا المتطوع في حالة (Freeze) حالياً.</div>
+                
+                <div id="dynamic-fields-container"></div>
+                
+                <div class="grid-form">
+                    <div><label>💡 فكرة الشهر الإبداعية</label><textarea id="eval-idea" placeholder="سجل فكرة المتطوع هنا..."></textarea></div>
+                    <div><label>💌 فقرة مدح إنسانية (للتقرير)</label><textarea id="eval-praise" placeholder="اكتب كلمات مشجعة..."></textarea></div>
+                </div>
+                <button class="btn btn-primary" style="width:100%" onclick="app.generateReport()">توليد التقرير النهائي</button>
             </div>
-
-            <button class="btn-main" style="width:100%; padding:15px; justify-content:center" onclick="app.generateReport()">🛠 توليد التقرير وحفظ البيانات</button>
         </div>
 
-        <div id="report-preview" style="display:none; margin-top:30px;"></div>
+        <div id="report-output" class="box" style="display:none; border:2px solid var(--primary);"></div>
     </div>
 
-    <div id="view-criteria" class="view-section">
+    <div id="page-crit" class="page-section">
         <div class="header">
-            <h1 class="page-title">إدارة المعايير (Dynamic System)</h1>
-            <button class="btn-main" onclick="app.openModal('modal-add-crit')">إضافة بند جديد</button>
+            <h1 class="page-title">إدارة المعايير (Dynamic)</h1>
+            <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة معيار جديد</button>
         </div>
         <div class="box">
-            <p style="margin-bottom:10px; font-size:13px; color:#666">هنا تقدري تتحكمي في كل بنود التقييم (تضيفي، تمسحي، تعدلي الوزن).</p>
-            <div id="criteria-list"></div>
+            <div id="crit-table-container"></div>
         </div>
     </div>
 
-    <div id="view-heatmap" class="view-section">
-        <div class="header"><h1 class="page-title">الخريطة الحرارية للفريق 🔥</h1></div>
-        <div class="box">
-            <p style="margin-bottom:20px">توضح متوسط أداء الفريق في كل معيار لكشف نقاط الضعف.</p>
-            <div id="heatmap-render" class="heatmap-grid"></div>
-        </div>
-    </div>
-
-    <div id="view-vault" class="view-section">
-        <div class="header"><h1 class="page-title">خزنة الأفكار (Creativity Vault) 💡</h1></div>
-        <div class="box" id="vault-list"></div>
-    </div>
-
-    <div id="view-settings" class="view-section">
-        <div class="header"><h1 class="page-title">الإعدادات والصلاحيات</h1></div>
-        
-        <div class="box" style="margin-bottom:20px">
-            <h3>🔑 تغيير كلمة المرور</h3>
-            <div class="form-row" style="margin-top:15px">
-                <input type="password" placeholder="كلمة المرور الحالية">
-                <input type="password" placeholder="الجديدة">
-            </div>
-            <button class="btn-main" onclick="alert('تم تغيير كلمة المرور بنجاح ✅')">تحديث</button>
-        </div>
-
-        <div class="box">
-            <div class="header"><h3>👥 إدارة المقيمين (Evaluators)</h3> <button class="btn-main" style="font-size:12px" onclick="app.openModal('modal-add-admin')">إضافة مقيم</button></div>
-            <div id="admin-list"></div>
-        </div>
-        
-        <button class="btn-danger" style="margin-top:30px; width:100%; padding:15px" onclick="app.resetSystem()">⚠️ ضبط المصنع (مسح كل البيانات)</button>
+    <div id="page-vault" class="page-section">
+        <div class="header"><h1 class="page-title">خزنة الأفكار 💡</h1></div>
+        <div class="box" id="ideas-container"></div>
     </div>
 
 </div>
 
-<div id="modal-add-vol" class="modal">
+<div id="modal-vol" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><span>إضافة متطوع جديد</span> <span class="close-btn" onclick="app.closeModal('modal-add-vol')">&times;</span></div>
-        <div class="form-row">
-            <div><label>الاسم</label><input type="text" id="v-name"></div>
-            <div><label>رقم الهاتف</label><input type="tel" id="v-phone"></div>
+        <h3>إضافة متطوع جديد</h3><br>
+        <div class="grid-form">
+            <input type="text" id="v-name" placeholder="الاسم الكامل">
+            <input type="tel" id="v-phone" placeholder="رقم الهاتف">
         </div>
-        <div class="form-row">
-            <div><label>تاريخ الميلاد</label><input type="date" id="v-dob" onchange="app.calcAge()"></div>
-            <div><label>العمر</label><input type="text" id="v-age" disabled style="background:#f3f4f6"></div>
-        </div>
-        <div class="form-row">
-            <div><label>تاريخ الانضمام</label><input type="date" id="v-join"></div>
-            <div><label>الدور</label>
-                <select id="v-role">
-                    <option>متطوع ميداني</option>
-                    <option>إداري</option>
-                    <option>مسئول ملف</option>
-                </select>
-            </div>
-        </div>
-        <div style="margin-bottom:15px"><label>حالة الفريز (Freeze)</label>
-            <select id="v-freeze">
-                <option value="no">نشط (Active)</option>
-                <option value="yes">مجمد (Freeze)</option>
+        <div class="grid-form">
+            <input type="date" id="v-join" title="تاريخ الانضمام">
+            <select id="v-role">
+                <option>متطوع ميداني</option>
+                <option>إداري</option>
+                <option>مسئول ملف</option>
             </select>
         </div>
-        <button class="btn-main" style="width:100%" onclick="app.addVol()">حفظ البيانات</button>
-    </div>
-</div>
-
-<div id="modal-add-crit" class="modal">
-    <div class="modal-content">
-        <div class="modal-header"><span>إضافة بند تقييم جديد</span> <span class="close-btn" onclick="app.closeModal('modal-add-crit')">&times;</span></div>
-        <div style="margin-bottom:15px"><label>اسم البند</label><input id="c-name" type="text"></div>
-        <div class="form-row">
-            <div><label>النوع</label>
-                <select id="c-type">
-                    <option value="fixed">أساسي (ثابت)</option>
-                    <option value="resp">مسئولية (متغير)</option>
-                    <option value="bonus">بونص (Bonus)</option>
-                </select>
-            </div>
-            <div><label>الوزن (الدرجة)</label><input id="c-max" type="number" value="10"></div>
+        <div class="grid-form">
+            <select id="v-freeze">
+                <option value="no">نشط</option>
+                <option value="yes">فريز (Freeze)</option>
+            </select>
         </div>
-        <button class="btn-main" style="width:100%" onclick="app.addCrit()">إضافة للقائمة</button>
+        <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">حفظ</button>
+        <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-vol')">إلغاء</button>
     </div>
 </div>
 
-<div id="modal-add-admin" class="modal">
+<div id="modal-crit" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><span>إضافة مقيم</span> <span class="close-btn" onclick="app.closeModal('modal-add-admin')">&times;</span></div>
-        <input type="email" id="adm-email" placeholder="البريد الإلكتروني" style="margin-bottom:15px">
-        <select id="adm-role" style="margin-bottom:15px"><option>Evaluator (تقييم فقط)</option><option>Admin (كامل)</option></select>
-        <button class="btn-main" style="width:100%" onclick="app.addAdmin()">إرسال الدعوة</button>
+        <h3>إضافة معيار تقييم</h3><br>
+        <input type="text" id="c-name" placeholder="اسم المعيار (مثال: الالتزام بالمواعيد)">
+        <div class="grid-form" style="margin-top:10px">
+            <select id="c-type">
+                <option value="fixed">أساسي (ثابت لكل المتطوعين)</option>
+                <option value="resp">مسئولية (للمسئولين فقط)</option>
+            </select>
+            <input type="number" id="c-weight" placeholder="الوزن (الدرجة)">
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:10px" onclick="app.saveCrit()">إضافة المعيار</button>
+        <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-crit')">إلغاء</button>
     </div>
 </div>
 
 <script>
-    // --- ZAD Altimate Engine V6.0 ---
+    // --- ZAD PRO ENGINE CORE ---
     const app = {
-        // قاعدة البيانات المحلية
-        db: {
+        data: {
             vols: JSON.parse(localStorage.getItem('zad_vols')) || [],
             crit: JSON.parse(localStorage.getItem('zad_crit')) || [
-                {id:1, name:'المشاركة الشهرية الإلزامية', type:'fixed', max:20},
-                {id:2, name:'تسليم التاسكات في موعدها', type:'fixed', max:10},
-                {id:3, name:'التفاعل على الجروب', type:'fixed', max:10},
-                {id:4, name:'الكريتيفيتي والأفكار', type:'fixed', max:10},
-                {id:5, name:'حضور الاجتماعات', type:'fixed', max:10},
-                {id:6, name:'إدارة الملف (للمسئولين)', type:'resp', max:20},
-                {id:7, name:'زيارة أسر (Bonus)', type:'bonus', max:5}
+                {id: 1, name: 'المشاركة الميدانية', type: 'fixed', weight: 10},
+                {id: 2, name: 'تسليم الفورم في الموعد', type: 'fixed', weight: 10},
+                {id: 3, name: 'التفاعل على الجروب', type: 'fixed', weight: 10}
             ],
-            history: JSON.parse(localStorage.getItem('zad_hist')) || [],
-            ideas: JSON.parse(localStorage.getItem('zad_ideas')) || [],
-            admins: JSON.parse(localStorage.getItem('zad_admins')) || []
+            evals: JSON.parse(localStorage.getItem('zad_evals')) || [],
+            ideas: JSON.parse(localStorage.getItem('zad_ideas')) || []
         },
 
         init() {
-            this.updateDate();
             this.updateStats();
+            this.renderVols();
+            this.renderCrit();
+            this.renderIdeas();
             this.checkAlerts();
-            this.renderVolTable();
-            this.renderCritList();
-            this.renderHeatmap();
-            this.renderVault();
-            this.renderAdmins();
+            this.populateVolSelect();
         },
 
-        // --- Navigation ---
-        nav(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            
-            // تحديث حالة الأزرار
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+        showPage(id) {
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             event.currentTarget.classList.add('active');
         },
+
         openModal(id) { document.getElementById(id).style.display = 'flex'; },
         closeModal(id) { document.getElementById(id).style.display = 'none'; },
 
-        // --- Volunteers Logic ---
-        calcAge() {
-            const dob = document.getElementById('v-dob').value;
-            if(dob) {
-                const age = new Date().getFullYear() - new Date(dob).getFullYear();
-                document.getElementById('v-age').value = age + " سنة";
-            }
-        },
-        addVol() {
-            const name = document.getElementById('v-name').value;
-            if(!name) return alert('يرجى كتابة الاسم!');
-            
-            this.db.vols.push({
+        // Volunteers Management
+        saveVol() {
+            const vol = {
                 id: Date.now(),
-                name: name,
+                name: document.getElementById('v-name').value,
                 phone: document.getElementById('v-phone').value,
-                dob: document.getElementById('v-dob').value,
-                age: document.getElementById('v-age').value,
-                joinDate: document.getElementById('v-join').value,
+                join: document.getElementById('v-join').value,
                 role: document.getElementById('v-role').value,
                 freeze: document.getElementById('v-freeze').value
-            });
+            };
+            if(!vol.name) return alert('الاسم مطلوب');
+            this.data.vols.push(vol);
             this.save();
-            this.renderVolTable();
+            this.renderVols();
+            this.populateVolSelect();
             this.updateStats();
-            this.closeModal('modal-add-vol');
-            alert('تمت الإضافة بنجاح ✅');
+            this.closeModal('modal-vol');
         },
-        renderVolTable() {
-            const container = document.getElementById('volunteers-table');
-            const select = document.getElementById('eval-vol-select');
+
+        renderVols() {
+            let html = `<table><thead><tr><th>الاسم</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>`;
+            this.data.vols.forEach(v => {
+                html += `<tr>
+                    <td><b>${v.name}</b></td>
+                    <td>${v.role}</td>
+                    <td>${v.freeze === 'yes' ? '❄️ فريز' : '✅ نشط'}</td>
+                    <td><button class="btn btn-danger" onclick="app.deleteVol(${v.id})">حذف</button></td>
+                </tr>`;
+            });
+            document.getElementById('vols-table-container').innerHTML = html + `</tbody></table>`;
+        },
+
+        deleteVol(id) {
+            this.data.vols = this.data.vols.filter(v => v.id !== id);
+            this.save(); this.renderVols(); this.populateVolSelect(); this.updateStats();
+        },
+
+        // Criteria Management
+        saveCrit() {
+            const crit = {
+                id: Date.now(),
+                name: document.getElementById('c-name').value,
+                type: document.getElementById('c-type').value,
+                weight: document.getElementById('c-weight').value || 10
+            };
+            this.data.crit.push(crit);
+            this.save(); this.renderCrit(); this.closeModal('modal-crit');
+        },
+
+        renderCrit() {
+            let html = `<table><thead><tr><th>المعيار</th><th>النوع</th><th>الوزن</th><th>إجراء</th></tr></thead><tbody>`;
+            this.data.crit.forEach(c => {
+                html += `<tr><td>${c.name}</td><td>${c.type === 'fixed' ? 'أساسي' : 'مسئولية'}</td><td>${c.weight}</td>
+                <td><button class="btn btn-danger" onclick="app.deleteCrit(${c.id})">حذف</button></td></tr>`;
+            });
+            document.getElementById('crit-table-container').innerHTML = html + `</tbody></table>`;
+        },
+
+        deleteCrit(id) {
+            this.data.crit = this.data.crit.filter(c => c.id !== id);
+            this.save(); this.renderCrit();
+        },
+
+        // Evaluation Logic
+        populateVolSelect() {
+            const sel = document.getElementById('eval-vol-select');
+            sel.innerHTML = '<option value="">-- اختر متطوع --</option>' + 
+                this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+        },
+
+        loadEvalFields() {
+            const vId = document.getElementById('eval-vol-select').value;
+            if(!vId) return document.getElementById('eval-form-body').style.display = 'none';
             
-            if(this.db.vols.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:20px; color:#999">لا يوجد متطوعين حالياً. ابدأي بالإضافة.</p>';
-                select.innerHTML = '<option>-- القائمة فارغة --</option>';
-                return;
+            const vol = this.data.vols.find(v => v.id == vId);
+            document.getElementById('freeze-notice').style.display = vol.freeze === 'yes' ? 'block' : 'none';
+            
+            let html = '<div class="grid-form">';
+            this.data.crit.forEach(c => {
+                // لو المتطوع مش مسئول، مش بنظهر له بنود المسئولية
+                if(c.type === 'resp' && vol.role !== 'مسئول ملف') return;
+                html += `<div><label>${c.name} (من ${c.weight})</label>
+                <input type="number" class="score-input" data-id="${c.id}" data-max="${c.weight}" value="0" min="0" max="${c.weight}"></div>`;
+            });
+            document.getElementById('dynamic-fields-container').innerHTML = html + '</div>';
+            document.getElementById('eval-form-body').style.display = 'block';
+        },
+
+        generateReport() {
+            const vId = document.getElementById('eval-vol-select').value;
+            const vol = this.data.vols.find(v => v.id == vId);
+            let score = 0, totalMax = 0;
+
+            document.querySelectorAll('.score-input').forEach(input => {
+                score += parseFloat(input.value) || 0;
+                totalMax += parseFloat(input.dataset.max);
+            });
+
+            const percent = ((score / totalMax) * 100).toFixed(1);
+            const idea = document.getElementById('eval-idea').value;
+            const praise = document.getElementById('eval-praise').value;
+
+            // Save Idea
+            if(idea) {
+                this.data.ideas.push({vol: vol.name, text: idea, date: new Date().toLocaleDateString()});
+                this.save(); this.renderIdeas();
             }
 
-            let html = `<table><thead><tr><th>الاسم</th><th>الدور</th><th>الاستمرارية</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>`;
-            let opts = `<option value="">-- اختر متطوع --</option>`;
-
-            this.db.vols.forEach(v => {
-                // حساب الاستمرارية (Sustainability Index)
-                const months = v.joinDate ? Math.floor((new Date() - new Date(v.joinDate)) / (1000*60*60*24*30)) : 0;
-                let badge = months > 12 ? '💎 ماسي' : (months > 6 ? '🥇 ذهبي' : '🥈 فضي');
-                let status = v.freeze === 'yes' ? '<span class="badge badge-red">Freeze ❄️</span>' : '<span class="badge badge-green">نشط</span>';
-
-                html += `<tr>
-                    <td><b>${v.name}</b><br><span style="font-size:11px; color:#888">${v.phone}</span></td>
-                    <td>${v.role}</td>
-                    <td><span class="badge badge-silver">${badge}</span></td>
-                    <td>${status}</td>
-                    <td><button class="btn-danger" onclick="app.delVol(${v.id})">حذف</button></td>
-                </tr>`;
-                
-                opts += `<option value="${v.id}">${v.name}</option>`;
-            });
-            container.innerHTML = html + `</tbody></table>`;
-            select.innerHTML = opts;
-        },
-        delVol(id) {
-            if(confirm('هل أنت متأكد من حذف المتطوع نهائياً؟')) {
-                this.db.vols = this.db.vols.filter(v => v.id !== id);
-                this.save(); this.renderVolTable(); this.updateStats();
+            const report = document.getElementById('report-output');
+            report.innerHTML = `
+                <div id="pdf-content" style="padding:20px">
+                    <h2 style="text-align:center; color:var(--primary)">ZAD ALTIMATE REPORT</h2>
+                    <p style="text-align:center">${new Date().toLocaleDateString()}</p>
+                    <hr style="margin:20px 0">
+                    <div style="display:flex; justify-content:space-between">
+                        <h3>المتطوع: ${vol.name}</h3>
+                        <h2 style="color:var(--primary)">${percent}%</h2>
+                    </div>
+                    <p style="margin-top:20px"><b>التحليل الإنساني:</b> ${praise || 'متطوع متميز ومجتهد'}</p>
+                    <div style="background:#f8fafc; padding:15px; border-radius:10px; margin-top:15px">
+                        <b>تحليل DNA:</b> ${percent > 85 ? 'طاقة قيادية عالية' : 'عنصر ميداني ملتزم'}
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width:100%; margin-top:10px" onclick="app.printPDF()">💾 تحميل التقرير PDF</button>
+            `;
+            report.style.display = 'block';
             
+            // Save eval record for alerts
+            this.data.evals.push({volId: vol.id, percent: percent, date: Date.now()});
+            this.save(); this.updateStats(); this.checkAlerts();
+        },
+
+        printPDF() {
+            const el = document.getElementById('pdf-content');
+            html2pdf().from(el).save('ZAD_Report.pdf');
+        },
+
+        // Helper Functions
+        updateStats() {
+            document.getElementById('st-vols').innerText = this.data.vols.length;
+            document.getElementById('st-freeze').innerText = this.data.vols.filter(v => v.freeze === 'yes').length;
+            document.getElementById('st-evals').innerText = this.data.evals.length;
+            document.getElementById('st-ideas').innerText = this.data.ideas.length;
+        },
+
+        renderIdeas() {
+            document.getElementById('ideas-container').innerHTML = this.data.ideas.map(i => `
+                <div style="border-bottom:1px solid #eee; padding:10px">
+                    <b>${i.vol}:</b> ${i.text} <small style="color:#999">(${i.date})</small>
+                </div>
+            `).join('') || 'لا توجد أفكار مسجلة بعد.';
+        },
+
+        checkAlerts() {
+            const low = this.data.evals.some(e => parseFloat(e.percent) < 50);
+            document.getElementById('smart-alert').style.display = low ? 'block' : 'none';
+        },
+
+        save() {
+            localStorage.setItem('zad_vols', JSON.stringify(this.data.vols));
+            localStorage.setItem('zad_crit', JSON.stringify(this.data.crit));
+            localStorage.setItem('zad_evals', JSON.stringify(this.data.evals));
+            localStorage.setItem('zad_ideas', JSON.stringify(this.data.ideas));
+        }
+    };
+
+    app.init();
+</script>
+</body>
+</html>
