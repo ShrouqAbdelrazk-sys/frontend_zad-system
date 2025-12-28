@@ -3,266 +3,353 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ZAD OMNI | Ultimate v4</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>ZAD OMNI | Ultimate Dashboard 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --primary: #059669; --dark: #064e3b; --bg: #f8fafc; --text: #111827; --accent: #f59e0b; }
+        :root { 
+            --primary: #059669; --primary-dark: #047857; --dark: #064e3b; 
+            --bg: #f0fdf4; --text: #111827; --accent: #f59e0b;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;
+            --border: #e5e7eb; --glass: rgba(255, 255, 255, 0.95);
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: var(--text); }
+        body { background: linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
-        /* Admin Bar & Navigation */
-        .admin-bar { background: var(--dark); color: white; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .logo-text { font-weight: 900; font-size: 22px; letter-spacing: 1px; }
-        .quick-nav { display: flex; gap: 10px; }
-        .quick-nav button { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
-        .quick-nav button:hover { background: var(--primary); }
+        /* --- Admin Bar --- */
+        .admin-bar { 
+            background: linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%); 
+            color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 8px 32px rgba(0,0,0,0.15); 
+        }
+        .logo-text { font-weight: 900; font-size: 24px; letter-spacing: 1px; background: linear-gradient(45deg, #fff, #a7f3d0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .dynamic-actions { display: flex; gap: 10px; }
+        .action-btn { 
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; 
+            padding: 8px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.3s; font-size: 13px;
+        }
+        .action-btn:hover { background: white; color: var(--primary); transform: translateY(-2px); }
 
-        /* Layout */
-        .container { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 30px; border-radius: 24px; border: 1px solid #e5e7eb; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
-        .card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); }
-        .card h3 { font-weight: 800; font-size: 1.3rem; color: var(--dark); margin-bottom: 10px; }
-        .card p { font-size: 14px; color: #6b7280; }
-        .card i { font-size: 40px; display: block; margin-bottom: 15px; }
+        /* --- Layout --- */
+        .container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
+        
+        /* Dashboard Grid */
+        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card { 
+            background: var(--glass); padding: 30px; border-radius: 24px; border: 1px solid var(--border); 
+            cursor: pointer; transition: 0.4s; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+        .card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(5, 150, 105, 0.15); }
+        .card i { font-size: 40px; display: block; margin-bottom: 15px; color: var(--primary); }
+        .card h3 { font-weight: 800; color: var(--dark); font-size: 1.4rem; }
+        .card p { color: #64748b; font-size: 0.9rem; margin-top: 5px; }
 
-        /* Pages System */
-        .page { display: none; background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); animation: slideUp 0.4s ease; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f3f4f6; padding-bottom: 20px; }
-        .back-btn { background: #f3f4f6; border: none; padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 700; color: #4b5563; }
+        /* --- Pages --- */
+        .page { display: none; background: var(--glass); padding: 40px; border-radius: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.05); animation: slideUp 0.4s ease; min-height: 600px; position: relative; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f1f5f9; padding-bottom: 20px; }
+        .page-title { font-weight: 900; font-size: 2rem; color: var(--dark); }
+        .back-btn { background: #f1f5f9; color: var(--text); border: none; padding: 10px 25px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .back-btn:hover { background: var(--dark); color: white; }
 
-        /* Forms & Inputs */
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: 700; color: #374151; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 14px; border: 1px solid #e5e7eb; border-radius: 14px; font-size: 15px; background: #f9fafb; outline: none; }
-        input:focus { border-color: var(--primary); background: white; }
-        .btn-submit { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 14px; width: 100%; font-weight: 800; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        /* --- Forms --- */
+        .form-box { background: #f8fafc; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; margin-bottom: 25px; display: none; animation: fadeIn 0.3s; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: #475569; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 15px; outline: none; transition: 0.3s; background: white; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(5,150,105,0.1); }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 15px; border-radius: 14px; width: 100%; font-weight: 800; cursor: pointer; font-size: 16px; margin-top: 15px; transition: 0.3s; }
+        .btn-main:hover { background: var(--primary-dark); transform: scale(1.02); }
 
-        /* Table Style */
+        /* --- Tables --- */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th { text-align: right; padding: 15px; color: #6b7280; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid #f3f4f6; }
-        td { padding: 20px 15px; border-bottom: 1px solid #f3f4f6; font-weight: 600; }
+        th { text-align: right; padding: 15px; background: #f1f5f9; color: var(--dark); font-weight: 800; border-radius: 8px; }
+        td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #334155; }
+        
+        /* --- Badges & Heatmap --- */
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: inline-block; }
+        .badge.gold { background: linear-gradient(45deg, #fbbf24, #d97706); color: white; }
+        .badge.silver { background: linear-gradient(45deg, #94a3b8, #475569); color: white; }
+        .badge.danger { background: #fee2e2; color: #dc2626; }
+        
+        /* --- Report Style --- */
+        .report-out { border: 4px solid var(--primary); padding: 40px; border-radius: 30px; background: white; margin-top: 30px; position: relative; transition: 0.5s; }
+        .report-out.excellent { background: linear-gradient(135deg, #f0fdf4, #ffffff); border-color: var(--success); } /* أخضر */
+        .report-out.shaky { background: linear-gradient(135deg, #fffbeb, #ffffff); border-color: var(--warning); } /* أصفر */
+        .report-out.freeze { background: linear-gradient(135deg, #f3f4f6, #ffffff); border-color: #9ca3af; } /* رمادي */
 
-        /* Report Styles */
-        .report-card { border: 2px solid var(--primary); padding: 40px; border-radius: 30px; background: white; position: relative; }
-        .badge-gold { background: linear-gradient(45deg, #fbbf24, #f59e0b); color: white; padding: 5px 15px; border-radius: 50px; font-size: 12px; }
-        .ai-note { background: #ecfdf5; border-right: 5px solid var(--primary); padding: 15px; margin: 15px 0; border-radius: 8px; font-size: 14px; }
+        .section-header { background: #f1f5f9; color: var(--dark); padding: 10px 15px; border-radius: 10px; font-weight: 800; margin: 20px 0 10px; }
+
+        /* --- Modal (Password) --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 40px; border-radius: 25px; width: 90%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="admin-bar">
-    <div class="logo-text">ZAD OMNI</div>
-    <div class="quick-nav">
-        <button onclick="omni.show('page-vols')">+ متطوع</button>
-        <button onclick="omni.show('page-criteria')">+ معيار</button>
-        <button onclick="omni.show('page-eval')">+ تقييم</button>
+    <div style="display:flex; align-items:center; gap:10px">
+        <span class="logo-text">ZAD OMNI</span>
+        <span style="font-size:11px; opacity:0.8; font-weight:600; border:1px solid rgba(255,255,255,0.3); padding:2px 8px; border-radius:10px;">ULTIMATE v4.0</span>
     </div>
+    <div id="dynamic-nav" class="dynamic-actions">
+        </div>
 </div>
 
 <div class="container">
-    <div id="page-home">
-        <div style="margin-bottom: 40px;">
-            <h1 style="font-weight: 900; font-size: 2.5rem; color: var(--dark);">لوحة القيادة الذكية</h1>
-            <p style="color: #6b7280;">مرحباً بكِ، إليكِ تحليل أداء فريق زاد لليوم.</p>
+    
+    <div id="home">
+        <div style="margin-bottom:30px">
+            <h1 style="font-weight:900; color:var(--dark); font-size:2.5rem">مرحباً شروق 👋</h1>
+            <p style="color:#64748b">إليكِ نظرة شاملة على أداء فريق زاد - نظام التشغيل 2026</p>
         </div>
-        <div class="dashboard-grid">
-            <div class="card" onclick="omni.show('page-vols')"><i>👥</i><h3>إدارة العائلة</h3><p>المتطوعين، الأعمار، والتراكمي</p></div>
-            <div class="card" onclick="omni.show('page-eval')"><i>🚀</i><h3>التقييم والـ AI</h3><p>توليد تقارير وتحليل DNA الأداء</p></div>
-            <div class="card" onclick="omni.show('page-criteria')"><i>📐</i><h3>المعايير الذكية</h3><p>إدارة بنود الـ KPIs</p></div>
-            <div class="card" onclick="omni.show('page-admins')"><i>🔑</i><h3>المُقيمين</h3><p>الصلاحيات والوصول بالبريد</p></div>
-            <div class="card" onclick="omni.show('page-vault')"><i>💡</i><h3>خزنة الأفكار</h3><p>بنك الكريتيفيتي المسجل</p></div>
-            <div class="card" onclick="omni.show('page-settings')"><i>🔒</i><h3>الأمان</h3><p>تغيير الباسورد والإعدادات</p></div>
+        
+        <div class="dash-grid">
+            <div class="card" onclick="omni.nav('vols')"><i>👥</i><h3>إدارة العائلة</h3><p>المتطوعين، الأعمار، الـ 360 Card</p></div>
+            <div class="card" onclick="omni.nav('eval')"><i>🚀</i><h3>التقييم الذكي</h3><p>تقارير ملونة، AI Insights</p></div>
+            <div class="card" onclick="omni.nav('heatmap')"><i>🔥</i><h3>الخريطة الحرارية</h3><p>كشف نقاط ضعف الفريق</p></div>
+            <div class="card" onclick="omni.nav('criteria')"><i>📐</i><h3>المعايير</h3><p>ثابتة / متغيرة</p></div>
+            <div class="card" onclick="omni.nav('vault')"><i>💡</i><h3>خزنة الأفكار</h3><p>Creativity Vault</p></div>
+            <div class="card" onclick="omni.nav('admins')"><i>🔑</i><h3>المُقيمين</h3><p>Super Admin Access</p></div>
+            <div class="card" onclick="omni.nav('settings')"><i>🔒</i><h3>الأمان</h3><p>تغيير الباسورد</p></div>
         </div>
     </div>
 
     <div id="page-vols" class="page">
-        <div class="page-header"><h2>إدارة عائلة زاد</h2><button class="back-btn" onclick="omni.show('page-home')">عودة للرئيسية</button></div>
-        <div class="form-grid">
-            <div class="input-group"><label>الاسم الكامل</label><input id="v-name" placeholder="الاسم ثلاثي"></div>
-            <div class="input-group"><label>تاريخ الميلاد</label><input type="date" id="v-birth" onchange="omni.calcAge(this.value)"></div>
-            <div class="input-group"><label>العمر الذكي</label><input id="v-age" disabled placeholder="يتم حسابه تلقائياً"></div>
-            <div class="input-group"><label>تاريخ الانضمام</label><input type="date" id="v-join"></div>
+        <div class="page-header"><h2 class="page-title">عائلة زاد (The 360 View)</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        
+        <div id="form-vols" class="form-box">
+            <div class="form-grid">
+                <div><label>الاسم الكامل</label><input id="v-name"></div>
+                <div><label>تاريخ الميلاد</label><input type="date" id="v-dob" onchange="omni.calcAge(this.value)"></div>
+            </div>
+            <div class="form-grid">
+                <div><label>العمر (محسوب آلياً)</label><input id="v-age" disabled style="background:#f1f5f9"></div>
+                <div><label>تاريخ الانضمام</label><input type="date" id="v-join"></div>
+            </div>
+            <label>ملاحظات سرية (للمشرفين فقط)</label><textarea id="v-note"></textarea>
+            <button class="btn-main" onclick="omni.addVol()">+ إضافة للكادر</button>
         </div>
-        <label>ملاحظات السجل السري</label><textarea id="v-note" rows="3"></textarea>
-        <button class="btn-submit" onclick="omni.saveVol()">+ إضافة المتطوع للقاعدة</button>
-        <div id="v-table-render"></div>
+
+        <div id="v-list-render"></div>
     </div>
 
     <div id="page-criteria" class="page">
-        <div class="page-header"><h2>ضبط المعايير (KPIs)</h2><button class="back-btn" onclick="omni.show('page-home')">عودة</button></div>
-        <div class="form-grid" style="grid-template-columns: 2fr 1fr;">
-            <input id="c-name" placeholder="اسم المعيار (مثلاً: الانضباط)">
-            <input id="c-max" type="number" placeholder="الدرجة القصوى">
+        <div class="page-header"><h2 class="page-title">إدارة المعايير (KPIs)</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        
+        <div id="form-criteria" class="form-box">
+            <div class="form-grid">
+                <div><label>اسم المعيار</label><input id="c-name"></div>
+                <div><label>نوع النشاط</label>
+                    <select id="c-type">
+                        <option value="fixed">أنشطة ثابتة (Fixed)</option>
+                        <option value="variable">أنشطة متغيرة (Variable)</option>
+                    </select>
+                </div>
+            </div>
+            <label>الدرجة القصوى (Max Score)</label><input type="number" id="c-max" value="10">
+            <button class="btn-main" onclick="omni.addCrit()">حفظ المعيار</button>
         </div>
-        <button class="btn-submit" onclick="omni.saveCriteria()">حفظ المعيار الجديد</button>
-        <div id="c-table-render"></div>
+        
+        <div id="c-list-render"></div>
     </div>
 
     <div id="page-eval" class="page">
-        <div class="page-header"><h2>رادار الأداء والتقرير الذكي</h2><button class="back-btn" onclick="omni.show('page-home')">عودة</button></div>
-        <label>اختر المتطوع للتقييم</label><select id="ev-select" style="margin-bottom: 30px;"></select>
-        <div id="dynamic-fields" class="form-grid"></div>
-        <div style="background: #fff7ed; padding: 20px; border-radius: 20px; margin: 20px 0;">
-            <label>💡 إضافة فكرة إبداعية (اختياري)</label>
-            <textarea id="ev-idea" placeholder="لو المتطوع اقترح فكرة، اكتبها هنا لتضاف لبنك الأفكار"></textarea>
+        <div class="page-header"><h2 class="page-title">رادار الأداء (AI Evaluation)</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        
+        <div style="background:#fff; padding:20px; border-radius:15px; border:2px solid var(--primary); margin-bottom:20px">
+            <label style="font-size:1.1rem; color:var(--dark)">اختر المتطوع للتحليل:</label>
+            <select id="ev-select" style="font-size:1rem; padding:10px"></select>
         </div>
-        <button class="btn-submit" onclick="omni.generateFullReport()">توليد التقرير والتحليل النفسي</button>
-        <div id="report-render-area"></div>
+
+        <div id="eval-form-render"></div> <div style="margin-top:20px; background:#fffbeb; padding:20px; border-radius:15px; border:1px solid #f59e0b;">
+            <label>💡 Idea Bank (هل لديه فكرة إبداعية؟)</label>
+            <textarea id="ev-idea" placeholder="اكتبي الفكرة هنا ليتم حفظها في خزنة الإبداع وتظهر في التقرير"></textarea>
+        </div>
+
+        <button class="btn-main" onclick="omni.generateReport()">🛠 توليد التقرير والتحليل النفسي</button>
+        
+        <div id="report-area"></div>
+    </div>
+
+    <div id="page-heatmap" class="page">
+        <div class="page-header"><h2 class="page-title">الخريطة الحرارية للفريق</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        <p style="margin-bottom:20px">هنا يظهر متوسط أداء الفريق في كل معيار لكشف نقاط الضعف الجماعية.</p>
+        <div id="heatmap-render" class="dash-grid"></div>
+    </div>
+
+    <div id="page-vault" class="page">
+        <div class="page-header"><h2 class="page-title">Genius Vault 💡</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        <div id="vault-render"></div>
     </div>
 
     <div id="page-admins" class="page">
-        <div class="page-header"><h2>إدارة المقيمين (Super Admin)</h2><button class="back-btn" onclick="omni.show('page-home')">عودة</button></div>
-        <div class="form-grid">
-            <input id="adm-email" type="email" placeholder="البريد الإلكتروني للمقيم">
-            <select id="adm-role"><option>تقييم ميداني فقط</option><option>تقييم كامل</option><option>عرض تقارير فقط</option></select>
+        <div class="page-header"><h2 class="page-title">Super Admin Access</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        
+        <div id="form-admins" class="form-box">
+            <label>البريد الإلكتروني للمُقيم</label><input type="email" id="adm-email" placeholder="email@example.com">
+            <label>الصلاحية</label>
+            <select id="adm-role">
+                <option>تقييم فقط</option>
+                <option>عرض تقارير فقط</option>
+                <option>مدير كامل (Full Access)</option>
+            </select>
+            <button class="btn-main" onclick="omni.addAdmin()">منح الصلاحية</button>
         </div>
-        <button class="btn-submit" onclick="omni.addAdmin()">تفعيل صلاحية المقيم</button>
-        <div id="adm-table-render"></div>
+        <div id="adm-list-render"></div>
+    </div>
+
+    <div id="page-settings" class="page">
+        <div class="page-header"><h2 class="page-title">إعدادات الأمان</h2><button class="back-btn" onclick="omni.nav('home')">الرئيسية</button></div>
+        <div style="text-align:center; padding:50px">
+            <button class="btn-main" style="max-width:300px; background:var(--dark)" onclick="document.getElementById('pwd-modal').style.display='flex'">تغيير كلمة المرور</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="pwd-modal" class="modal">
+    <div class="modal-content">
+        <h3>تغيير كلمة المرور</h3>
+        <input type="password" placeholder="كلمة المرور الحالية" style="margin:10px 0">
+        <input type="password" placeholder="كلمة المرور الجديدة" style="margin:10px 0">
+        <button class="btn-main" onclick="alert('تم التحديث بنجاح ✅'); document.getElementById('pwd-modal').style.display='none'">تحديث</button>
+        <button onclick="document.getElementById('pwd-modal').style.display='none'" style="background:none; border:none; color:red; margin-top:10px; cursor:pointer">إلغاء</button>
     </div>
 </div>
 
 <script>
-    const API = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
-    let criteria = JSON.parse(localStorage.getItem('z_crit')) || [{id:1, name:'الانضباط', max:10}, {id:2, name:'التفاعل', max:10}];
-    let admins = JSON.parse(localStorage.getItem('z_adms')) || [];
-
+    // --- ZAD OMNI BRAIN v4.0 ---
     const omni = {
-        async init() {
-            this.loadVols();
-            this.renderCriteria();
-            this.renderAdmins();
-        },
-        show(id) {
-            document.querySelectorAll('.page, #page-home').forEach(p => p.style.display = 'none');
-            document.getElementById(id).style.display = 'block';
-            if(id === 'page-eval') this.prepareEval();
+        data: {
+            vols: JSON.parse(localStorage.getItem('zad_vols')) || [],
+            crit: JSON.parse(localStorage.getItem('zad_crit')) || [
+                {id:1, name:'الحضور الميداني', type:'fixed', max:10},
+                {id:2, name:'التفاعل الرقمي', type:'variable', max:10}
+            ],
+            admins: JSON.parse(localStorage.getItem('zad_admins')) || [],
+            ideas: JSON.parse(localStorage.getItem('zad_ideas')) || [],
+            history: JSON.parse(localStorage.getItem('zad_history')) || [] // لتخزين درجات الشهور السابقة للترند
         },
 
-        // --- المتطوعين ---
-        calcAge(val) {
-            if(!val) return;
-            const age = new Date().getFullYear() - new Date(val).getFullYear();
+        init() {
+            this.nav('home');
+        },
+
+        // --- Navigation Logic (الأزرار الذكية) ---
+        nav(pageId) {
+            // إخفاء كل الصفحات
+            document.getElementById('home').style.display = 'none';
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            
+            // إظهار الصفحة المطلوبة
+            if(pageId === 'home') document.getElementById('home').style.display = 'grid';
+            else {
+                document.getElementById('page-'+pageId).style.display = 'block';
+                // تشغيل وظائف التحميل الخاصة بكل صفحة
+                if(pageId === 'vols') this.renderVols();
+                if(pageId === 'criteria') this.renderCrit();
+                if(pageId === 'eval') this.renderEvalPage();
+                if(pageId === 'admins') this.renderAdmins();
+                if(pageId === 'vault') this.renderVault();
+                if(pageId === 'heatmap') this.renderHeatmap();
+            }
+            this.updateHeader(pageId);
+        },
+
+        updateHeader(pageId) {
+            const bar = document.getElementById('dynamic-nav');
+            bar.innerHTML = ''; // تنظيف الأزرار
+            
+            // إضافة الأزرار حسب السياق
+            if(pageId === 'vols') bar.innerHTML = `<button class="action-btn" onclick="omni.toggle('form-vols')">+ إضافة متطوع</button>`;
+            if(pageId === 'criteria') bar.innerHTML = `<button class="action-btn" onclick="omni.toggle('form-criteria')">+ إضافة معيار</button>`;
+            if(pageId === 'admins') bar.innerHTML = `<button class="action-btn" onclick="omni.toggle('form-admins')">+ إضافة مُقيم</button>`;
+        },
+
+        toggle(id) {
+            const el = document.getElementById(id);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        },
+
+        // --- 1. Volunteers Logic & 360 Card ---
+        calcAge(dob) {
+            if(!dob) return;
+            const age = new Date().getFullYear() - new Date(dob).getFullYear();
             document.getElementById('v-age').value = age + " سنة";
         },
-        async saveVol() {
+
+        addVol() {
             const name = document.getElementById('v-name').value;
-            if(!name) return alert("اكتبي الاسم");
-            const payload = { full_name: name, phone: document.getElementById('v-age').value, role: document.getElementById('v-join').value + "|" + document.getElementById('v-note').value };
-            const res = await fetch(`${API}/volunteers`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-            if(res.ok) { alert("تمت الإضافة بنجاح ✅"); this.loadVols(); }
+            if(!name) return alert('الرجاء كتابة الاسم');
+            const vol = {
+                id: Date.now(),
+                name: name,
+                dob: document.getElementById('v-dob').value,
+                age: document.getElementById('v-age').value,
+                joinDate: document.getElementById('v-join').value,
+                note: document.getElementById('v-note').value
+            };
+            this.data.vols.push(vol);
+            this.save();
+            this.renderVols();
+            this.toggle('form-vols');
+            alert('تمت الإضافة للكادر ✅');
         },
-        async loadVols() {
-            const res = await fetch(`${API}/volunteers`);
-            const d = await res.json();
-            const list = document.getElementById('v-table-render');
-            let h = `<table><tr><th>الاسم</th><th>العمر</th><th>اللقب</th><th>إجراء</th></tr>`;
-            d.volunteers.forEach(v => {
-                const joinDate = v.role.split('|')[0] || new Date();
-                const months = Math.floor((new Date() - new Date(joinDate)) / (1000*60*60*24*30));
-                let rank = "متطوع ناشئ";
-                if(months > 6) rank = "متطوع خبير";
-                if(months > 12) rank = "عمود من أعمدة زاد";
-                
-                h += `<tr><td>${v.full_name}</td><td>${v.phone || '؟'}</td><td><span class="badge-gold">${rank}</span></td><td><button onclick="omni.delV('${v.id}')" style="color:red; cursor:pointer; border:none; background:none;">حذف</button></td></tr>`;
-            });
-            list.innerHTML = h + `</table>`;
-            // تحديث dropdown التقييم
-            document.getElementById('ev-select').innerHTML = d.volunteers.map(v => `<option value="${v.id}">${v.full_name}</option>`).join('');
-        },
-        async delV(id) { if(confirm("حذف؟")) { await fetch(`${API}/volunteers/${id}`, {method:'DELETE'}); this.loadVols(); } },
 
-        // --- المعايير ---
-        saveCriteria() {
-            const n = document.getElementById('c-name').value;
-            const m = document.getElementById('c-max').value;
-            if(!n || !m) return;
-            criteria.push({id:Date.now(), name:n, max:m});
-            localStorage.setItem('z_crit', JSON.stringify(criteria));
-            this.renderCriteria();
-        },
-        renderCriteria() {
-            let h = `<table><tr><th>المعيار</th><th>الدرجة</th><th>إجراء</th></tr>`;
-            criteria.forEach(c => h += `<tr><td>${c.name}</td><td>${c.max}</td><td><button onclick="omni.delC(${c.id})">حذف</button></td></tr>`);
-            document.getElementById('c-table-render').innerHTML = h + `</table>`;
-        },
-        delC(id) { criteria = criteria.filter(c => c.id !== id); localStorage.setItem('z_crit', JSON.stringify(criteria)); this.renderCriteria(); },
-
-        // --- التقييم والـ AI ---
-        prepareEval() {
-            document.getElementById('dynamic-fields').innerHTML = criteria.map(c => `
-                <div class="input-group">
-                    <label>${c.name} (من ${c.max})</label>
-                    <input type="number" class="ev-inp" data-name="${c.name}" data-max="${c.max}">
-                </div>
-            `).join('');
-        },
-        async generateFullReport() {
-            let total = 0, maxPoints = 0, strengths = [], weaknesses = [];
-            const vName = document.getElementById('ev-select').options[document.getElementById('ev-select').selectedIndex].text;
+        renderVols() {
+            const list = document.getElementById('v-list-render');
+            if(this.data.vols.length === 0) { list.innerHTML = '<p style="text-align:center; color:#999">لا يوجد متطوعين حالياً</p>'; return; }
             
-            document.querySelectorAll('.ev-inp').forEach(inp => {
-                let v = parseInt(inp.value) || 0;
-                let m = parseInt(inp.dataset.max);
-                total += v; maxPoints += m;
-                if(v >= m * 0.8) strengths.push(inp.dataset.name);
-                else if(v < m * 0.5) weaknesses.push(inp.dataset.name);
+            let html = `<table><tr><th>الاسم</th><th>العمر</th><th>اللقب (الخبرة)</th><th>تنبيه</th><th>إجراء</th></tr>`;
+            
+            this.data.vols.forEach(v => {
+                // حساب اللقب (360 Logic)
+                const months = v.joinDate ? Math.floor((new Date() - new Date(v.joinDate)) / (1000*60*60*24*30)) : 0;
+                let rank = "🌱 متطوع ناشئ";
+                let badgeClass = "silver";
+                if(months > 6) { rank = "⭐ متطوع خبير"; badgeClass = "gold"; }
+                if(months > 12) { rank = "💎 عمود زاد"; badgeClass = "gold"; }
+
+                // رادار التنبؤ بالانسحاب (Predictive Dropout) - محاكاة
+                // لو المتطوع ده درجاته وحشة مرتين ورا بعض (هنفترض شرط عشوائي للتجربة هنا)
+                let alertIcon = "";
+                // Logic can be connected to history later
+
+                html += `
+                <tr>
+                    <td><b>${v.name}</b></td>
+                    <td>${v.age || '--'}</td>
+                    <td><span class="badge ${badgeClass}">${rank}</span></td>
+                    <td>${alertIcon}</td>
+                    <td><button onclick="omni.delVol(${v.id})" style="color:red; background:none; border:none; cursor:pointer">حذف</button></td>
+                </tr>`;
             });
-
-            const score = ((total/maxPoints)*100).toFixed(1);
-            const dna = strengths.length > weaknesses.length ? "مبادر بالفطرة" : "يحتاج لتوجيه مهامي";
-            const idea = document.getElementById('ev-idea').value;
-
-            document.getElementById('report-render-area').innerHTML = `
-                <div class="report-card" id="pdf-report">
-                    <h1 style="text-align:center; color:var(--dark)">ZAD OMNI | REPORT</h1>
-                    <p style="text-align:center; color:var(--primary); font-weight:900">تقرير الأداء الشامل 2026</p>
-                    <hr style="margin:20px 0">
-                    <div style="display:flex; justify-content:space-between">
-                        <span><b>المتطوع:</b> ${vName}</span>
-                        <span class="badge-gold">النسبة: ${score}%</span>
-                    </div>
-                    <div class="ai-note">
-                        <b>تحليل DNA الأداء:</b> ${dna} <br>
-                        <b>نقاط القوة:</b> ${strengths.join('، ') || 'جاري المراقبة'} <br>
-                        <b>نقاط الضعف:</b> ${weaknesses.join('، ') || 'لا يوجد'}
-                    </div>
-                    ${score > 90 ? `<div style="text-align:center; padding:20px; border:2px dashed gold; border-radius:15px; margin-top:20px">🏅 وسام التميز الاستحقاقي من زاد 🏅</div>` : ''}
-                    ${idea ? `<p style="margin-top:20px"><b>الفكرة الإبداعية:</b> ${idea}</p>` : ''}
-                    <button class="btn-submit" style="margin-top:30px; background:var(--dark)" onclick="omni.downloadReport()">تحميل التقرير الرسمي PDF</button>
-                </div>
-            `;
-            // حفظ الفكرة في السيرفر
-            if(idea) {
-                await fetch(`${API}/evaluations`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({volunteer_id: document.getElementById('ev-select').value, percentage: score, notes: idea, evaluation_month: 12, evaluation_year: 2025}) });
-            }
+            list.innerHTML = html + `</table>`;
         },
-        downloadReport() {
-            const el = document.getElementById('pdf-report');
-            html2pdf().from(el).set({margin:1, filename:'ZAD_Report.pdf'}).save();
-        },
+        delVol(id) { if(confirm('حذف المتطوع نهائياً؟')) { this.data.vols = this.data.vols.filter(v=>v.id!==id); this.save(); this.renderVols(); } },
 
-        // --- المقيمين ---
-        addAdmin() {
-            const email = document.getElementById('adm-email').value;
-            const role = document.getElementById('adm-role').value;
-            if(!email.includes('@')) return alert("يرجى إدخال بريد إلكتروني صحيح");
-            admins.push({id:Date.now(), email, role});
-            localStorage.setItem('z_adms', JSON.stringify(admins));
-            this.renderAdmins();
+        // --- 2. Criteria Logic (Fixed/Variable) ---
+        addCrit() {
+            const name = document.getElementById('c-name').value;
+            if(!name) return;
+            this.data.crit.push({
+                id: Date.now(),
+                name: name,
+                type: document.getElementById('c-type').value,
+                max: document.getElementById('c-max').value
+            });
+            this.save(); this.renderCrit(); this.toggle('form-criteria');
         },
-        renderAdmins() {
-            let h = `<table><tr><th>البريد</th><th>الصلاحية</th><th>إجراء</th></tr>`;
-            admins.forEach(a => h += `<tr><td>${a.email}</td><td>${a.role}</td><td><button onclick="omni.delAdm(${a.id})">تعطيل</button></td></tr>`);
-            document.getElementById('adm-table-render').innerHTML = h + `</table>`;
+        renderCrit() {
+            let html = `<table><tr><th>المعيار</th><th>النوع</th><th>Max</th><th>حذف</th></tr>`;
+            this.data.crit.forEach(c => {
+                html += `<tr><td>${c.name}</td><td>${c.type==='fixed'?'ثابتة':'متغيرة'}</td><td>${c.max}</td><td><button onclick="omni.delCrit(${c.id})" style="color:red;border:none;background:none;cursor:pointer">X</button></td></tr>`;
+            });
+            document.getElementById('c-list-render').innerHTML = html + `</table>`;
         },
-        delAdm(id) { admins = admins.filter(a => a.id !== id); localStorage.setItem('z_adms', JSON.stringify(admins)); this.renderAdmins(); }
-    };
+        delCrit(id) { this.data.crit = this.data.crit.filter(c=>c.id!==id); this.save(); this.renderCrit(); },
 
-    omni.init();
-</script>
-</body>
-</html>
+        // --- 3. Evaluation & AI Reporting Logic -
