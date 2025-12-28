@@ -4,25 +4,12 @@
     <meta charset="utf-8" />
     <link rel="icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#10b981" />
     <meta name="description" content="نظام تقييم متطوعي مشروع زاد - Zad Volunteer Evaluation System" />
     <title>نظام تقييم متطوعي مشروع زاد</title>
     
-    <!-- Material-UI Roboto Font -->
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
-    />
-    <!-- Arabic Font -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    />
-    <!-- Material-UI Icons -->
-    <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
     
     <style>
         * {
@@ -32,9 +19,10 @@
         }
         
         body {
-            font-family: 'Cairo', 'Roboto', sans-serif;
+            font-family: 'Cairo', sans-serif;
             direction: rtl;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* التدرج الأخضر الجديد */
+            background: linear-gradient(135deg, #064e3b 0%, #10b981 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -44,7 +32,7 @@
         .container {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             padding: 40px;
             max-width: 400px;
             width: 90%;
@@ -54,27 +42,29 @@
         .logo {
             width: 80px;
             height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             border-radius: 50%;
-            margin: 0 auto 20px;
+            margin: 0 auto 25px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 32px;
             font-weight: bold;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
         
         h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 22px;
+            font-weight: 700;
         }
         
         .subtitle {
-            color: #666;
+            color: #6b7280;
             margin-bottom: 30px;
-            font-size: 14px;
+            font-size: 13px;
         }
         
         .form-group {
@@ -84,131 +74,109 @@
         
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #333;
-            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 14px;
         }
         
         input[type="email"],
         input[type="password"] {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
             direction: ltr;
             text-align: left;
         }
         
-        input[type="email"]:focus,
-        input[type="password"]:focus {
+        input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
         }
         
         .btn {
             width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 14px;
+            background: #10b981;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            margin-top: 10px;
         }
         
         .btn:hover {
+            background: #059669;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
         }
         
         .status {
             margin-top: 20px;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: 500;
         }
         
         .status.error {
-            background-color: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fee2e2;
         }
         
         .status.success {
-            background-color: #efe;
-            color: #393;
-            border: 1px solid #cfc;
+            background-color: #ecfdf5;
+            color: #059669;
+            border: 1px solid #d1fae5;
         }
         
-        .features {
+        .feature-list {
             margin-top: 30px;
-            text-align: right;
+            border-top: 1px solid #f3f4f6;
+            padding-top: 20px;
         }
         
         .feature {
-            margin: 10px 0;
-            color: #666;
-            font-size: 14px;
+            margin: 8px 0;
+            color: #4b5563;
+            font-size: 13px;
+            text-align: right;
+            display: flex;
+            align-items: center;
         }
         
         .feature::before {
-            content: "✓";
-            color: #667eea;
-            font-weight: bold;
+            content: "check_circle";
+            font-family: 'Material Icons';
+            color: #10b981;
+            font-size: 18px;
             margin-left: 8px;
-        }
-        
-        .demo-note {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            border-right: 4px solid #667eea;
-            text-align: right;
-        }
-        
-        .demo-note h3 {
-            color: #667eea;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .demo-note p {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .credentials {
-            background: #e8f4fd;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            direction: ltr;
-            text-align: left;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">ZAD</div>
-        <h1>نظام تقييم متطوعين مشروع زاد</h1>
-        <p class="subtitle">مشروع زاد التابع لمؤسسة انسان الخيرية المشهرة برقم 63</p>
+        <h1>نظام تقييم متطوعي زاد</h1>
+        <p class="subtitle">مؤسسة إنسان الخيرية - مشهرة برقم 63</p>
         
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">البريد الإلكتروني</label>
-                <input type="email" id="email" name="email" required value="admin@zad.org">
+                <input type="email" id="email" required value="admin@zad.org">
             </div>
             
             <div class="form-group">
                 <label for="password">كلمة المرور</label>
-                <input type="password" id="password" name="password" required value="admin123">
+                <input type="password" id="password" required value="admin123">
             </div>
             
             <button type="submit" class="btn">تسجيل الدخول</button>
@@ -216,20 +184,16 @@
         
         <div id="status" class="status" style="display: none;"></div>
         
-        <div class="features">
-            <h3 style="color: #333; margin-bottom: 15px;">المميزات الرئيسية</h3>
+        <div class="feature-list">
             <div class="feature">إدارة شاملة للمتطوعين</div>
             <div class="feature">نظام التقييم الشهري المتقدم</div>
-            <div class="feature">نظام التجميد والمكافآت</div>
-            <div class="feature">التقارير والإحصائيات</div>
-            <div class="feature">نظام التنبيهات الذكية</div>
-            <div class="feature">واجهة عربية متكاملة</div>
+            <div class="feature">التقارير والإحصائيات الذكية</div>
         </div>
     </div>
 
     <script>
-        // إعداد الـ API Base URL (للتبديل بين Demo و Production)
-        const API_BASE_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api'; // URL تجريبي
+        // الربط المباشر بسيرفر Koyeb الخاص بكِ
+        const API_BASE_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
         
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -240,61 +204,38 @@
             
             statusDiv.style.display = 'block';
             statusDiv.className = 'status';
-            statusDiv.textContent = 'جاري تسجيل الدخول...';
+            statusDiv.textContent = 'جاري التحقق من الهوية...';
             
             try {
-                // محاولة الاتصال بالـ Backend
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
                 
+                const data = await response.json();
+                
                 if (response.ok) {
-                    const data = await response.json();
                     statusDiv.className = 'status success';
-                    statusDiv.textContent = `مرحباً ${data.user.full_name}! تم تسجيل الدخول بنجاح`;
+                    statusDiv.textContent = `مرحباً ${data.user.full_name || 'بطل زاد'}! تم الدخول بنجاح.`;
                     
-                    // حفظ التوكين
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     
-                    // توجيه إلى لوحة التحكم
                     setTimeout(() => {
                         window.location.href = './dashboard.html';
-                    }, 1500);
+                    }, 1200);
                     
                 } else {
-                    const error = await response.json();
                     statusDiv.className = 'status error';
-                    statusDiv.textContent = error.message || 'خطأ في بيانات الدخول';
+                    statusDiv.textContent = data.message || 'خطأ في بيانات الدخول';
                 }
                 
             } catch (error) {
-                // في حالة عدم توفر Backend، عرض رسالة توضيحية
                 statusDiv.className = 'status error';
-                statusDiv.textContent = 'الـ Backend غير متاح حالياً - هذه نسخة تجريبية للعرض فقط';
-                
-                // محاكاة تسجيل دخول للعرض
-                if (email === 'admin@zad.org' && password === 'admin123') {
-                    setTimeout(() => {
-                        statusDiv.className = 'status success';
-                        statusDiv.textContent = 'تم تسجيل الدخول التجريبي - توجيه إلى النظام...';
-                        
-                        setTimeout(() => {
-                            window.location.href = './dashboard.html';
-                        }, 1000);
-                    }, 1000);
-                }
+                statusDiv.textContent = 'تعذر الاتصال بالسيرفر. تأكدي من أن Koyeb "Healthy"';
             }
         });
-        
-        // إضافة معلومات النسخة
-        console.log('نظام تقييم متطوعي مشروع زاد - الإصدار 1.0.1');
-        console.log('تم التطوير بواسطة: AI Assistant');
-        console.log('التاريخ:', new Date().toLocaleDateString('ar-EG'));
     </script>
 </body>
 </html>
