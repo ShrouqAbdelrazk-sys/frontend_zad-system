@@ -3,243 +3,248 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ZAD OMNI | نظام الإدارة</title>
+    <title>ZAD OMNI | الإدارة المركزية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        :root { --main: #10b981; --dark: #065f46; --bg: #f3f4f6; --border: #e5e7eb; --danger: #ef4444; }
+        :root { --main: #059669; --dark: #064e3b; --bg: #f3f4f6; --text: #1f2937; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
-        body { background: var(--bg); color: #374151; }
-        
-        /* Navbar */
-        .navbar { background: white; padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); }
-        .logo { font-weight: 900; font-size: 24px; color: var(--dark); letter-spacing: 1px; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        /* شريط الوصول السريع العلوي */
+        .admin-bar { background: var(--dark); color: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .quick-actions { display: flex; gap: 10px; }
+        .quick-actions button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: 0.3s; }
+        .quick-actions button:hover { background: var(--main); }
+
+        /* الهيدر */
+        .header { background: white; padding: 40px 20px; text-align: center; border-bottom: 1px solid #e5e7eb; }
+        .header h1 { font-weight: 900; font-size: 2.5rem; color: var(--dark); letter-spacing: -1px; }
 
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
 
-        /* الأزرار الرئيسية */
-        .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 40px; }
-        .dash-card { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); cursor: pointer; text-align: center; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .dash-card:hover { border-color: var(--main); transform: translateY(-3px); background: #f9fafb; }
-        .dash-card b { display: block; font-size: 22px; margin-bottom: 8px; }
+        /* الداش بورد (الاختصارات) */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .nav-card { background: white; padding: 40px 20px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid #eee; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .nav-card:hover { transform: translateY(-5px); border-color: var(--main); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .nav-card i { font-size: 40px; display: block; margin-bottom: 15px; }
+        .nav-card h3 { font-weight: 800; color: var(--dark); }
 
-        /* ستايل المعايير (زي الصورة) */
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .category-label { color: var(--main); font-weight: 800; margin: 25px 0 15px; font-size: 20px; border-right: 4px solid var(--main); padding-right: 10px; }
-        .criteria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .c-card { background: white; border-radius: 15px; padding: 25px; border: 1px solid var(--border); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        .c-card h4 { font-weight: 800; margin-bottom: 8px; color: #111827; }
-        .c-card p { font-size: 14px; color: #6b7280; margin-bottom: 20px; line-height: 1.6; }
-        .points-tag { background: #ecfdf5; color: var(--dark); padding: 8px; border-radius: 10px; font-weight: 700; font-size: 14px; text-align: center; border: 1px solid #d1fae5; }
+        /* الصفحات المنفصلة */
+        .page { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* المودال */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 100%; max-width: 550px; border-radius: 20px; overflow: hidden; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .modal-header { background: #f9fafb; padding: 20px; font-weight: 800; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 25px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--bg); padding-bottom: 15px; }
+        .btn-back { background: #6b7280; color: white; border: none; padding: 8px 18px; border-radius: 10px; cursor: pointer; }
 
-        /* الإدخال */
-        label { display: block; margin-bottom: 8px; font-weight: 700; font-size: 15px; color: #4b5563; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; margin-bottom: 20px; font-size: 15px; outline: none; }
-        input:focus { border-color: var(--main); }
-        .btn-action { background: var(--main); color: white; border: none; padding: 14px; border-radius: 10px; width: 100%; font-weight: 700; cursor: pointer; font-size: 16px; transition: 0.2s; }
-        .btn-action:hover { background: var(--dark); }
-        
-        .btn-del { background: none; border: 1px solid #fee2e2; color: var(--danger); padding: 8px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: 600; }
-        .btn-del:hover { background: #fef2f2; }
+        /* الجداول والفورم */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 700; color: var(--dark); }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; }
+        .btn-save { background: var(--main); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: 800; cursor: pointer; font-size: 16px; }
 
-        table { width: 100%; margin-top: 10px; }
-        th, td { text-align: right; padding: 15px; border-bottom: 1px solid #f3f4f6; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 15px; text-align: right; border-bottom: 1px solid #f3f4f6; }
+        th { background: #f9fafb; color: var(--dark); font-weight: 800; }
+
+        .report-box { border: 2px solid var(--main); padding: 30px; border-radius: 20px; background: #fff; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-<div class="navbar">
-    <div class="logo">ZAD OMNI</div>
-    <div style="color: #9ca3af; font-weight: 600;">نظام الإدارة المتكامل</div>
+<div class="admin-bar">
+    <div style="font-weight: 900; font-size: 18px; letter-spacing: 1px;">ZAD OMNI</div>
+    <div class="quick-actions">
+        <button onclick="omni.showPage('page-vols')">+ متطوع</button>
+        <button onclick="omni.showPage('page-criteria')">+ معيار</button>
+        <button onclick="omni.showPage('page-eval')">+ تقييم</button>
+    </div>
 </div>
 
-<div class="container">
-    <div class="dash-grid">
-        <button class="dash-card" onclick="app.openVols()"><b>👤</b> المتطوعين</button>
-        <button class="dash-card" onclick="app.openEval()"><b>📝</b> تقييم جديد</button>
-        <button class="dash-card" onclick="app.openCriteria()"><b>⚙️</b> المعايير</button>
-        <button class="dash-card" onclick="app.openVault()"><b>💡</b> بنك الأفكار</button>
-        <button class="dash-card" onclick="app.openSettings()"><b>🔒</b> الأمان</button>
+<div id="main-content">
+    <div id="page-home">
+        <div class="header">
+            <h1>ZAD OMNI</h1>
+            <p>مرحباً بكِ في واجهة الإدارة الشاملة</p>
+        </div>
+        <div class="container">
+            <div class="dashboard-grid">
+                <div class="nav-card" onclick="omni.showPage('page-vols')"><i>👥</i><h3>إدارة العائلة</h3><p>بيانات المتطوعين والأعمار</p></div>
+                <div class="nav-card" onclick="omni.showPage('page-eval')"><i>🚀</i><h3>التقييم الشهري</h3><p>توليد تقارير PDF ذكية</p></div>
+                <div class="nav-card" onclick="omni.showPage('page-criteria')"><i>📐</i><h3>ضبط المعايير</h3><p>تعديل بنود التقييم</p></div>
+                <div class="nav-card" onclick="omni.showPage('page-vault')"><i>💡</i><h3>بنك الأفكار</h3><p>خزنة إبداعات الفريق</p></div>
+            </div>
+        </div>
     </div>
 
-    <div class="section-header">
-        <h2 style="font-weight: 800; color: #111827;">معايير التقييم الحالية</h2>
-        <button onclick="app.addCriteriaModal()" style="background:var(--dark); color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; font-weight:700;">+ إضافة معيار</button>
-    </div>
-
-    <div id="criteria-container">
+    <div class="container">
+        <div id="page-vols" class="page">
+            <div class="page-header"><h2>إدارة المتطوعين</h2><button class="btn-back" onclick="omni.showPage('page-home')">عودة</button></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>الاسم الكامل</label><input id="v-name">
+                    <label>تاريخ الميلاد</label><input type="date" id="v-birth" onchange="omni.autoAge(this.value)">
+                    <label>العمر المحسوب</label><input id="v-age" disabled style="background: #f9fafb;">
+                </div>
+                <div class="form-group">
+                    <label>تاريخ الانضمام لزاد</label><input type="date" id="v-join">
+                    <label>ملاحظات إضافية</label><textarea id="v-note" rows="4"></textarea>
+                </div>
+            </div>
+            <button class="btn-save" onclick="omni.saveVol()">إضافة المتطوع للقاعدة</button>
+            <div id="v-list-box"></div>
         </div>
-</div>
 
-<div id="modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span id="m-title">العنوان</span>
-            <span style="cursor:pointer; font-size: 24px;" onclick="app.close()">&times;</span>
+        <div id="page-criteria" class="page">
+            <div class="page-header"><h2>معايير التقييم</h2><button class="btn-back" onclick="omni.showPage('page-home')">عودة</button></div>
+            <div class="form-group">
+                <label>اسم المعيار</label><input id="c-name">
+                <label>الدرجة القصوى</label><input type="number" id="c-max">
+                <button class="btn-save" style="margin-top:10px" onclick="omni.saveCriteria()">حفظ المعيار</button>
+            </div>
+            <div id="c-list-box"></div>
         </div>
-        <div class="modal-body" id="m-body"></div>
+
+        <div id="page-eval" class="page">
+            <div class="page-header"><h2>التقييم والتقرير الذكي</h2><button class="btn-back" onclick="omni.showPage('page-home')">عودة</button></div>
+            <label>اختر المتطوع</label><select id="ev-select"></select>
+            <div id="dynamic-eval" style="margin-top:20px"></div>
+            <label>فكرة المتطوع (اختياري)</label><textarea id="ev-idea" placeholder="اكتبي فكرته هنا لتُحفظ في البنك"></textarea>
+            <button class="btn-save" onclick="omni.generateReport()">توليد التقرير وتحليل الأداء</button>
+            <div id="report-output"></div>
+        </div>
+
+        <div id="page-vault" class="page">
+            <div class="page-header"><h2>خزنة الأفكار الذهبية</h2><button class="btn-back" onclick="omni.showPage('page-home')">عودة</button></div>
+            <div id="vault-box"></div>
+        </div>
     </div>
 </div>
 
 <script>
     const API = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
     
-    // إدارة البيانات محلياً للمعايير والباسورد
-    let criteria = JSON.parse(localStorage.getItem('zad_criteria_v5')) || [
-        {id: 1, name: 'حضور الميتينج', desc: 'مدى الالتزام بحضور الاجتماعات الدورية والفعاليات الثابتة', max: 10, cat: 'أنشطة ثابتة'},
-        {id: 2, name: 'سرعة الاستجابة', desc: 'سرعة الرد على التكليفات والتفاعل في المجموعات', max: 10, cat: 'أنشطة ثابتة'}
-    ];
+    // البيانات المحلية
+    let criteria = JSON.parse(localStorage.getItem('omni_c')) || [{id:1, name:'الانضباط', max:10}, {id:2, name:'التفاعل', max:10}];
+    let volunteers = [];
 
-    const app = {
-        async init() { this.renderCriteria(); },
-        open(title) { document.getElementById('m-title').innerText = title; document.getElementById('modal').style.display = 'flex'; },
-        close() { document.getElementById('modal').style.display = 'none'; },
-
-        // --- 1. إدارة المعايير ---
-        renderCriteria() {
-            const container = document.getElementById('criteria-container');
-            const cats = [...new Set(criteria.map(c => c.cat))];
-            container.innerHTML = cats.map(cat => `
-                <h3 class="category-label">${cat}</h3>
-                <div class="criteria-grid">
-                    ${criteria.filter(c => c.cat === cat).map(c => `
-                        <div class="c-card">
-                            <h4>${c.name}</h4>
-                            <p>${c.desc}</p>
-                            <div class="points-tag">الحد الأقصى: ${c.max} نقاط</div>
-                            <button class="btn-del" onclick="app.deleteC(${c.id})">حذف المعيار</button>
-                        </div>
-                    `).join('')}
-                </div>
-            `).join('');
-        },
-        addCriteriaModal() {
-            this.open("إضافة معيار تقييم جديد");
-            document.getElementById('m-body').innerHTML = `
-                <label>اسم المعيار</label><input id="cn" type="text" placeholder="مثلاً: التفاعل الميداني">
-                <label>وصف المعيار</label><textarea id="cd" rows="3" placeholder="اشرح للمقيم إزاي يحط الدرجة"></textarea>
-                <label>الفئة</label><input id="cc" type="text" placeholder="أنشطة ثابتة / متغيرة">
-                <label>الدرجة القصوى</label><input id="cm" type="number" placeholder="10">
-                <button class="btn-action" onclick="app.saveC()">حفظ المعيار في النظام</button>
-            `;
-        },
-        saveC() {
-            const n = document.getElementById('cn').value;
-            if(!n) return;
-            criteria.push({ id: Date.now(), name: n, desc: document.getElementById('cd').value, max: document.getElementById('cm').value, cat: document.getElementById('cc').value });
-            localStorage.setItem('zad_criteria_v5', JSON.stringify(criteria));
-            this.renderCriteria(); this.close();
-        },
-        deleteC(id) { if(confirm("حذف المعيار نهائياً؟")) { criteria = criteria.filter(c => c.id !== id); localStorage.setItem('zad_criteria_v5', JSON.stringify(criteria)); this.renderCriteria(); } },
-
-        // --- 2. المتطوعين (إصلاح كامل للإضافة) ---
-        async openVols() {
-            this.open("قائمة عائلة زاد");
-            document.getElementById('m-body').innerHTML = `
-                <div style="background:#f9fafb; padding:15px; border-radius:12px; margin-bottom:20px;">
-                    <label>اسم المتطوع</label><input id="v-name" type="text">
-                    <label>رقم الهاتف</label><input id="v-phone" type="text">
-                    <button class="btn-action" onclick="app.saveVol()">إضافة المتطوع الآن</button>
-                </div>
-                <div id="v-list-data">تحميل المتطوعين...</div>
-            `;
+    const omni = {
+        async init() {
             this.loadVols();
+            this.renderCriteria();
+        },
+        showPage(pageId) {
+            document.querySelectorAll('.page, #page-home').forEach(p => p.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+            if(pageId === 'page-eval') this.prepareEval();
+        },
+
+        // --- المتطوعين ---
+        autoAge(val) {
+            if(!val) return;
+            const age = new Date().getFullYear() - new Date(val).getFullYear();
+            document.getElementById('v-age').value = age + " سنة";
         },
         async saveVol() {
             const name = document.getElementById('v-name').value;
-            const phone = document.getElementById('v-phone').value;
-            if(!name) return alert("يرجى كتابة الاسم");
-            
-            const res = await fetch(`${API}/volunteers`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({full_name: name, phone: phone, role: 'عضو'})
-            });
-            if(res.ok) { this.loadVols(); document.getElementById('v-name').value = ""; document.getElementById('v-phone').value = ""; }
+            if(!name) return alert("اكتبي الاسم");
+            const payload = { full_name: name, phone: document.getElementById('v-age').value, role: document.getElementById('v-note').value };
+            await fetch(`${API}/volunteers`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+            alert("تمت الإضافة!"); this.loadVols();
         },
         async loadVols() {
             const res = await fetch(`${API}/volunteers`);
-            const data = await res.json();
-            document.getElementById('v-list-data').innerHTML = `<table>` + data.volunteers.map(v => `<tr><td><b>${v.full_name}</b></td><td style="text-align:left"><button onclick="app.delV('${v.id}')" style="color:var(--danger); border:none; background:none; cursor:pointer">حذف</button></td></tr>`).join('') + `</table>`;
-        },
-        async delV(id) { if(confirm("حذف المتطوع؟")) { await fetch(`${API}/volunteers/${id}`, {method:'DELETE'}); this.loadVols(); } },
-
-        // --- 3. التقييم (نقاط القوة/الضعف + المعايير) ---
-        async openEval() {
-            const res = await fetch(`${API}/volunteers`);
-            const data = await res.json();
-            if(data.volunteers.length === 0) return alert("أضيفي متطوعين أولاً");
+            const d = await res.json();
+            volunteers = d.volunteers;
+            let h = `<table><tr><th>الاسم</th><th>العمر</th><th>إجراء</th></tr>`;
+            volunteers.forEach(v => {
+                h += `<tr><td>${v.full_name}</td><td>${v.phone || '--'}</td><td><button onclick="omni.delV('${v.id}')" style="color:red; border:none; background:none; cursor:pointer">حذف</button></td></tr>`;
+            });
+            document.getElementById('v-list-box').innerHTML = h + `</table>`;
             
-            this.open("إجراء تقييم أداء");
-            const vOpts = data.volunteers.map(v => `<option value="${v.id}">${v.full_name}</option>`).join('');
-            document.getElementById('m-body').innerHTML = `
-                <label>اختر المتطوع</label><select id="ev-id">${vOpts}</select>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px">
-                    <div><label>نقاط القوة</label><textarea id="ev-s" rows="3" placeholder="ايه الميز اللي فيه؟"></textarea></div>
-                    <div><label>نقاط الضعف</label><textarea id="ev-w" rows="3" placeholder="محتاج يطور ايه؟"></textarea></div>
-                </div>
-                <label>فكرة الشهر / اقتراحه</label><textarea id="ev-idea" rows="2"></textarea>
-                <hr style="margin:15px 0; border:none; border-top:1px solid #eee">
-                <div id="dynamic-eval-fields">
-                    ${criteria.map(c => `<label>${c.name} (من ${c.max})</label><input type="number" class="ev-inp" data-max="${c.max}" data-name="${c.name}" placeholder="0 - ${c.max}">`).join('')}
-                </div>
-                <button class="btn-action" onclick="app.saveEval()">حفظ التقييم نهائياً</button>
-            `;
+            // تحديث قائمة الاختيار في التقييم
+            const sel = document.getElementById('ev-select');
+            if(sel) sel.innerHTML = volunteers.map(v => `<option value="${v.id}">${v.full_name}</option>`).join('');
         },
-        async saveEval() {
-            let totalGot = 0, totalMax = 0, lowScores = [];
-            document.querySelectorAll('.ev-inp').forEach(input => {
-                let val = parseInt(input.value) || 0;
-                let max = parseInt(input.dataset.max);
-                totalGot += val; totalMax += max;
-                if(val < max/2) lowScores.push(input.dataset.name);
+        async delV(id) { if(confirm("حذف؟")) { await fetch(`${API}/volunteers/${id}`, {method:'DELETE'}); this.loadVols(); } },
+
+        // --- المعايير ---
+        renderCriteria() {
+            let h = `<table><tr><th>المعيار</th><th>الدرجة</th><th>إجراء</th></tr>`;
+            criteria.forEach(c => h += `<tr><td>${c.name}</td><td>${c.max}</td><td><button onclick="omni.delC(${c.id})" style="color:red; border:none; background:none; cursor:pointer">حذف</button></td></tr>`);
+            document.getElementById('c-list-box').innerHTML = h + `</table>`;
+        },
+        saveCriteria() {
+            const n = document.getElementById('c-name').value;
+            const m = document.getElementById('c-max').value;
+            if(!n || !m) return;
+            criteria.push({id:Date.now(), name:n, max:m});
+            localStorage.setItem('omni_c', JSON.stringify(criteria));
+            this.renderCriteria();
+        },
+        delC(id) { criteria = criteria.filter(c => c.id !== id); localStorage.setItem('omni_c', JSON.stringify(criteria)); this.renderCriteria(); },
+
+        // --- التقييم والتقرير ---
+        prepareEval() {
+            document.getElementById('dynamic-eval').innerHTML = criteria.map(c => `
+                <div class="form-group">
+                    <label>${c.name} (من ${c.max})</label>
+                    <input type="number" class="ev-inp" data-name="${c.name}" data-max="${c.max}">
+                </div>
+            `).join('');
+        },
+        async generateReport() {
+            let s = [], w = [], total = 0, max = 0;
+            const name = document.getElementById('ev-select').options[document.getElementById('ev-select').selectedIndex].text;
+            
+            document.querySelectorAll('.ev-inp').forEach(i => {
+                let val = parseInt(i.value) || 0;
+                let mx = parseInt(i.dataset.max);
+                total += val; max += mx;
+                if(val >= mx * 0.8) s.push(i.dataset.name);
+                else if(val < mx * 0.5) w.push(i.dataset.name);
             });
 
-            if(lowScores.length > 0) alert("تنبيه: المتطوع مستواه ضعيف في: " + lowScores.join('، '));
+            const score = ((total/max)*100).toFixed(1);
+            const idea = document.getElementById('ev-idea').value;
 
-            const percent = ((totalGot/totalMax)*100).toFixed(1);
-            const payload = {
-                volunteer_id: document.getElementById('ev-id').value,
-                percentage: percent,
-                notes: `Idea: ${document.getElementById('ev-idea').value} | S: ${document.getElementById('ev-s').value} | W: ${document.getElementById('ev-w').value}`,
-                evaluation_month: 12, evaluation_year: 2025
-            };
-            await fetch(`${API}/evaluations`, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-            alert(`تم الحفظ بنجاح! النسبة الإجمالية: ${percent}%`); this.close();
-        },
-
-        // --- 4. الأمان ---
-        openSettings() {
-            this.open("إعدادات الأمان");
-            document.getElementById('m-body').innerHTML = `
-                <label>كلمة المرور الجديدة</label>
-                <input id="new-pass" type="password" placeholder="أدخل كلمة مرور قوية">
-                <button class="btn-action" onclick="app.updatePass()">تحديث كلمة المرور</button>
+            document.getElementById('report-output').innerHTML = `
+                <div class="report-box" id="pdf-content">
+                    <h2 style="color:var(--main); text-align:center">ZAD OMNI | تقرير الأداء الشهري</h2>
+                    <p style="text-align:center; margin-bottom:20px">للمتطوع: ${name}</p>
+                    <hr style="margin-bottom:20px">
+                    <p><b>النسبة المئوية:</b> ${score}%</p>
+                    <p><b>نقاط القوة المستخرجة:</b> ${s.join('، ') || 'قيد التحليل'}</p>
+                    <p><b>نقاط الضعف المستخرجة:</b> ${w.join('، ') || 'لا يوجد ملحوظات'}</p>
+                    ${idea ? `<p><b>الفكرة المقترحة:</b> ${idea}</p>` : ''}
+                    <button class="btn-save" style="margin-top:20px; background:var(--dark)" onclick="omni.downloadPDF()">تحميل PDF التقرير</button>
+                </div>
             `;
+            
+            // حفظ الفكرة في السيرفر كـ Note لو موجودة
+            if(idea) {
+                const vId = document.getElementById('ev-select').value;
+                await fetch(`${API}/evaluations`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({volunteer_id: vId, percentage: score, notes: idea, evaluation_month: 12, evaluation_year: 2025}) });
+            }
         },
-        updatePass() {
-            const p = document.getElementById('new-pass').value;
-            if(p) { localStorage.setItem('zad_admin_pass', p); alert("تم التحديث! سيتم طلبها في الدخول القادم."); this.close(); }
+        downloadPDF() {
+            const el = document.getElementById('pdf-content');
+            html2pdf().from(el).set({margin:1, filename:'ZAD_Report.pdf', image:{type:'jpeg', quality:0.98}}).save();
         },
 
         async openVault() {
-            this.open("خزنة الأفكار");
+            this.showPage('page-vault');
             const res = await fetch(`${API}/evaluations`);
-            const data = await res.json();
-            document.getElementById('m-body').innerHTML = data.map(e => `
-                <div style="background:#f9fafb; padding:15px; border-radius:10px; margin-bottom:10px; border-right:4px solid var(--main)">
-                    <b>${e.volunteer_name}:</b><br>${e.notes.split('|')[0]}
-                </div>`).join('') || "لا يوجد أفكار مسجلة بعد.";
+            const d = await res.json();
+            document.getElementById('vault-box').innerHTML = d.map(e => `
+                <div style="background:#f9fafb; padding:15px; border-radius:15px; margin-bottom:10px; border-right:5px solid var(--main)">
+                    <b>${e.volunteer_name}:</b><br>${e.notes}
+                </div>
+            `).join('') || "لا يوجد أفكار مخزنة.";
         }
     };
 
-    app.init();
+    omni.init();
 </script>
 </body>
 </html>
