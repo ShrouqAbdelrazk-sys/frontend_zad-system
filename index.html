@@ -16,7 +16,7 @@
         .form-group { margin-bottom: 20px; text-align: right; }
         label { display: block; margin-bottom: 8px; color: #374151; font-weight: 600; }
         input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; direction: ltr; }
-        .btn { width: 100%; padding: 14px; background: #10b981; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn { width: 100%; padding: 14px; background: #10b981; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
         .status { margin-top: 20px; padding: 12px; border-radius: 10px; display: none; }
         .status.error { background: #fef2f2; color: #dc2626; }
         .status.success { background: #ecfdf5; color: #059669; }
@@ -46,7 +46,7 @@
             e.preventDefault();
             const statusDiv = document.getElementById('status');
             statusDiv.style.display = 'block';
-            statusDiv.textContent = 'جاري التحقق...';
+            statusDiv.textContent = 'جاري تسجيل الدخول...';
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
@@ -58,15 +58,16 @@
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     statusDiv.className = 'status success';
-                    statusDiv.textContent = 'تم تسجيل الدخول!';
-                    setTimeout(() => { window.location.href = 'dashboard.html'; }, 800);
+                    statusDiv.textContent = 'تم النجاح! جاري الانتقال...';
+                    // استخدام setTimeout لضمان كتابة البيانات في الـ Storage
+                    setTimeout(() => { window.location.replace('dashboard.html'); }, 500);
                 } else {
                     statusDiv.className = 'status error';
-                    statusDiv.textContent = data.message || 'خطأ';
+                    statusDiv.textContent = data.message || 'خطأ في البيانات';
                 }
             } catch (err) {
                 statusDiv.className = 'status error';
-                statusDiv.textContent = 'خطأ اتصال';
+                statusDiv.textContent = 'خطأ في الاتصال';
             }
         });
     </script>
