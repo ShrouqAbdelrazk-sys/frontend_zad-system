@@ -3,62 +3,52 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ZAD Altimate | نظام إدارة متطوعي زاد</title>
+    <title>ZAD Altimate | Pro Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
         :root {
-            --primary: #10b981; /* أخضر زاد */
-            --royal-green: #064e3b; /* أخضر ملكي للقوائم */
-            --bg: #f0fdf4;
-            --white: #ffffff;
-            --danger: #ef4444;
-            --text: #1f2937;
+            --primary: #10b981; --royal-green: #064e3b; --bg: #f0fdf4;
+            --white: #ffffff; --danger: #ef4444; --text: #1f2937;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar - Royal Green */
-        .sidebar { width: 260px; background: var(--royal-green); color: white; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; z-index: 100; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--royal-green); color: white; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
         .logo { font-size: 24px; font-weight: 900; color: var(--primary); margin-bottom: 30px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
-        .nav-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #d1fae5; font-weight: 600; }
-        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; transform: translateX(-5px); }
+        .nav-item { padding: 12px; margin-bottom: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.3s; color: #d1fae5; }
+        .nav-item:hover, .nav-item.active { background: var(--primary); color: white; }
 
-        /* Main Content */
+        /* Main */
         .main { flex: 1; overflow-y: auto; padding: 30px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-title { font-size: 26px; font-weight: 800; color: var(--royal-green); }
-        
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; padding: 20px; border-radius: 15px; border-top: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; }
-        .stat-card h3 { font-size: 14px; color: #64748b; }
-        .stat-card .val { font-size: 28px; font-weight: 900; margin-top: 5px; color: var(--royal-green); }
-
         .box { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
         
         .grid-form { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-weight: 700; color: var(--royal-green); font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
         
-        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; font-size: 13px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #fee2e2; color: var(--danger); font-size: 12px; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-edit { background: #e0f2fe; color: #0369a1; }
 
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: right; background: #f8fafc; padding: 15px; font-size: 13px; color: var(--royal-green); border-bottom: 2px solid #10b981; }
-        td { padding: 15px; border-bottom: 1px solid #edf2f7; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: right; background: #f8fafc; padding: 15px; color: var(--royal-green); border-bottom: 2px solid var(--primary); }
+        td { padding: 12px; border-bottom: 1px solid #edf2f7; font-size: 14px; }
+
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+        .bg-fixed { background: #dcfce7; color: #166534; }
+        .bg-var { background: #fef9c3; color: #854d0e; }
+        .bg-bonus { background: #dbeafe; color: #1e40af; }
 
         .page-section { display: none; }
-        .page-section.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
-
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
+        .page-section.active { display: block; }
+        
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background: white; width: 550px; padding: 30px; border-radius: 20px; max-height: 90vh; overflow-y: auto; }
-
-        #report-output { border-right: 8px solid var(--primary); background: #fdfdfd; }
-        .praise-box { font-style: italic; color: #065f46; background: #ecfdf5; padding: 15px; border-radius: 8px; border: 1px dashed var(--primary); margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -67,320 +57,267 @@
     <div class="logo">ZAD Altimate</div>
     <div class="nav-item active" onclick="app.showPage('dash')">📊 الرئيسية</div>
     <div class="nav-item" onclick="app.showPage('vols')">👥 المتطوعين</div>
-    <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقارير</div>
+    <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقرير</div>
     <div class="nav-item" onclick="app.showPage('crit')">⚙️ المعايير</div>
     <div class="nav-item" onclick="app.showPage('vault')">💡 بنك الأفكار</div>
 </div>
 
 <div class="main">
-    
     <div id="page-dash" class="page-section active">
-        <div class="header">
-            <h1 class="page-title">مرحباً بكِ في "زاد" 🌿</h1>
-            <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button>
-        </div>
-
-        <div class="stats-grid">
-            <div class="stat-card"><h3>إجمالي المتطوعين</h3><div class="val" id="st-vols">0</div></div>
-            <div class="stat-card"><h3>حالات الفريز</h3><div class="val" id="st-freeze">0</div></div>
-            <div class="stat-card"><h3>تقييمات مسجلة</h3><div class="val" id="st-evals">0</div></div>
-            <div class="stat-card"><h3>أفكار إبداعية</h3><div class="val" id="st-ideas">0</div></div>
-        </div>
-
+        <div class="header"><h1>مرحباً بعودتك.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button></div>
         <div class="box">
-            <h3>📈 حالة الفريق الشهرية</h3>
-            <canvas id="myChart" style="width:100%; max-height:200px"></canvas>
-            <p style="margin-top:15px; color:#666">يتم التحديث تلقائياً بناءً على آخر التقييمات.</p>
+            <h3>📈 إحصائيات سريعة</h3>
+            <div style="display:flex; gap:20px; margin-top:15px">
+                <div style="flex:1; background:#ecfdf5; padding:20px; border-radius:12px; text-align:center">
+                    <small>إجمالي المتطوعين</small><h2 id="st-vols">0</h2>
+                </div>
+                <div style="flex:1; background:#f0f9ff; padding:20px; border-radius:12px; text-align:center">
+                    <small>مسئولي الملفات</small><h2 id="st-leads">0</h2>
+                </div>
+            </div>
         </div>
+        <div class="box"><h3>💡 أحدث فكرة مسجلة</h3><div id="last-idea" style="margin-top:10px; font-style:italic"></div></div>
     </div>
 
     <div id="page-vols" class="page-section">
-        <div class="header">
-            <h1 class="page-title">قاعدة بيانات المتطوعين</h1>
-            <button class="btn btn-primary" onclick="app.openModal('modal-vol')">إضافة متطوع</button>
-        </div>
-        <div class="box">
-            <div id="vols-table-container" style="overflow-x: auto;"></div>
-        </div>
+        <div class="header"><h1>إدارة المتطوعين</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">إضافة جديد</button></div>
+        <div class="box"><div id="vols-table-container"></div></div>
     </div>
 
     <div id="page-eval" class="page-section">
-        <div class="header"><h1 class="page-title">التقييم والتحليل الإنساني</h1></div>
-        
+        <div class="header"><h1>التقييم والتحليل</h1></div>
         <div class="box">
-            <label>اختر المتطوع لبدء التقييم:</label>
+            <label>اختر المتطوع للمراجعة:</label>
             <select id="eval-vol-select" onchange="app.loadEvalFields()"></select>
             
             <div id="eval-form-body" style="display:none; margin-top:20px;">
-                <div id="freeze-notice" style="color:var(--danger); font-weight:700; margin-bottom:15px; display:none">❄️ تنبيه: هذا المتطوع في عذر (Freeze).</div>
-                
+                <div id="vol-status-badge" style="margin-bottom:15px"></div>
                 <div id="dynamic-fields-container"></div>
-                
-                <div class="grid-form" style="margin-top:20px">
-                    <div><label>💡 فكرة المتطوع (اختياري)</label><textarea id="eval-idea" rows="2"></textarea></div>
-                    <div><label>✍️ ملاحظات إضافية</label><textarea id="eval-note" rows="2"></textarea></div>
-                </div>
-                <button class="btn btn-primary" style="width:100%; padding:15px" onclick="app.generateReport()">حفظ التقييم وإصدار التقرير</button>
+                <label>💡 فكرة إبداعية (اختياري)</label>
+                <textarea id="eval-idea"></textarea>
+                <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px" onclick="app.generateReport()">إصدار التقرير النهائي</button>
             </div>
         </div>
-
-        <div id="report-output" class="box" style="display:none;"></div>
+        <div id="report-output" class="box" style="display:none; border-right:10px solid var(--primary)"></div>
     </div>
 
     <div id="page-crit" class="page-section">
-        <div class="header">
-            <h1 class="page-title">إدارة معايير التقييم</h1>
-            <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة بند تقييم</button>
-        </div>
-        <div class="box">
-            <p style="margin-bottom:15px; color:#666">أي معيار تضيفيه هنا سيظهر تلقائياً في استمارة التقييم لكل المتطوعين.</p>
-            <div id="crit-table-container"></div>
-        </div>
+        <div class="header"><h1>هيكلة التقييم</h1> <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة معيار</button></div>
+        <div class="box"><div id="crit-table-container"></div></div>
     </div>
 
     <div id="page-vault" class="page-section">
-        <div class="header"><h1 class="page-title">بنك الأفكار الذهبية 💡</h1></div>
-        <div class="box" id="ideas-container"></div>
+        <div class="header"><h1>خزنة الأفكار 💡</h1></div>
+        <div id="ideas-container"></div>
     </div>
-
 </div>
 
 <div id="modal-vol" class="modal">
     <div class="modal-content">
-        <h3 style="color:var(--royal-green)">إضافة متطوع جديد</h3><br>
+        <h3 id="modal-vol-title">إضافة متطوع</h3><br>
+        <input type="hidden" id="v-id">
         <div class="grid-form">
-            <div><label>الاسم الكامل</label><input type="text" id="v-name"></div>
-            <div><label>رقم الهاتف</label><input type="tel" id="v-phone"></div>
+            <input type="text" id="v-name" placeholder="الاسم">
+            <input type="tel" id="v-phone" placeholder="الهاتف">
         </div>
         <div class="grid-form">
-            <div><label>تاريخ الميلاد</label><input type="date" id="v-dob" onchange="app.autoCalcAge()"></div>
-            <div><label>العمر تلقائياً</label><input type="text" id="v-age" readonly style="background:#f3f4f6"></div>
+            <input type="date" id="v-dob" onchange="app.calcAge()">
+            <input type="text" id="v-age" placeholder="العمر" readonly>
         </div>
         <div class="grid-form">
-            <div><label>تاريخ الانضمام</label><input type="date" id="v-join"></div>
-            <div><label>الدور الوظيفي</label>
-                <select id="v-role">
-                    <option>متطوع ميداني</option>
-                    <option>إداري</option>
-                    <option>مسئول ملف</option>
-                </select>
-            </div>
+            <input type="date" id="v-join" title="تاريخ الانضمام">
+            <select id="v-role">
+                <option value="field">متطوع ميداني</option>
+                <option value="lead">مسئول ملف</option>
+            </select>
         </div>
-        <div class="grid-form">
-            <div><label>حالة الفريز</label>
-                <select id="v-freeze">
-                    <option value="no">نشط</option>
-                    <option value="yes">فريز (Freeze)</option>
-                </select>
-            </div>
-        </div>
-        <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">إضافة المتطوع للقاعدة</button>
-        <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-vol')">إلغاء</button>
+        <select id="v-freeze" style="margin-bottom:15px">
+            <option value="no">حالة نشطة ✅</option>
+            <option value="yes">حالة فريز ❄️</option>
+        </select>
+        <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">حفظ البيانات</button>
+        <button class="btn" style="width:100%; margin-top:5px" onclick="app.closeModal('modal-vol')">إلغاء</button>
     </div>
 </div>
 
 <div id="modal-crit" class="modal">
     <div class="modal-content">
-        <h3 style="color:var(--royal-green)">إضافة بند تقييم جديد</h3><br>
-        <label>اسم المعيار</label>
-        <input type="text" id="c-name" placeholder="مثال: الرد على الجروب">
-        <div class="grid-form" style="margin-top:15px">
-            <div><label>النوع</label>
-                <select id="c-type">
-                    <option value="fixed">أساسي (للكل)</option>
-                    <option value="resp">مسئولية (للمسئولين فقط)</option>
-                </select>
-            </div>
-            <div><label>الدرجة العظمى</label><input type="number" id="c-weight" value="10"></div>
+        <h3>تعريف معيار جديد</h3><br>
+        <input type="text" id="c-name" placeholder="اسم المعيار">
+        <div class="grid-form" style="margin-top:10px">
+            <select id="c-type">
+                <option value="fixed">ثابت</option>
+                <option value="variable">متغير</option>
+                <option value="bonus">بونص</option>
+            </select>
+            <select id="c-target">
+                <option value="all">للجميع</option>
+                <option value="lead">للمسئولين فقط</option>
+            </select>
         </div>
-        <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.saveCrit()">تثبيت المعيار</button>
-        <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-crit')">إلغاء</button>
+        <input type="number" id="c-weight" placeholder="الدرجة القصوى" style="margin-top:10px">
+        <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.saveCrit()">تثبيت</button>
+        <button class="btn" style="width:100%; margin-top:5px" onclick="app.closeModal('modal-crit')">إلغاء</button>
     </div>
 </div>
 
 <script>
-    const app = {
-        data: {
-            vols: JSON.parse(localStorage.getItem('zad_vols')) || [],
-            crit: JSON.parse(localStorage.getItem('zad_crit')) || [
-                {id: 1, name: 'المشاركة الميدانية الإلزامية', type: 'fixed', weight: 20},
-                {id: 2, name: 'تسليم الفورم في الموعد', type: 'fixed', weight: 10},
-                {id: 3, name: 'التفاعل والرد على الجروب', type: 'fixed', weight: 10},
-                {id: 4, name: 'حضور الاجتماعات', type: 'fixed', weight: 10}
-            ],
-            evals: JSON.parse(localStorage.getItem('zad_evals')) || [],
-            ideas: JSON.parse(localStorage.getItem('zad_ideas')) || []
-        },
+const app = {
+    data: {
+        vols: JSON.parse(localStorage.getItem('z_vols_v3')) || [],
+        crit: JSON.parse(localStorage.getItem('z_crit_v3')) || [
+            {id:1, name:'المشاركة الميدانية', type:'fixed', target:'all', weight:20},
+            {id:2, name:'إدارة المهام', type:'fixed', target:'lead', weight:20}
+        ],
+        evals: JSON.parse(localStorage.getItem('z_evals_v3')) || [],
+        ideas: JSON.parse(localStorage.getItem('z_ideas_v3')) || []
+    },
 
-        init() {
-            this.updateStats();
-            this.renderVols();
-            this.renderCrit();
-            this.renderIdeas();
-            this.populateVolSelect();
-        },
+    init() { this.renderAll(); },
 
-        showPage(id) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-' + id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        },
+    save() {
+        localStorage.setItem('z_vols_v3', JSON.stringify(this.data.vols));
+        localStorage.setItem('z_crit_v3', JSON.stringify(this.data.crit));
+        localStorage.setItem('z_evals_v3', JSON.stringify(this.data.evals));
+        localStorage.setItem('z_ideas_v3', JSON.stringify(this.data.ideas));
+    },
 
-        openModal(id) { document.getElementById(id).style.display = 'flex'; },
-        closeModal(id) { document.getElementById(id).style.display = 'none'; },
+    showPage(id) {
+        document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+        document.getElementById('page-'+id).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    },
 
-        autoCalcAge() {
-            const dob = document.getElementById('v-dob').value;
-            if(!dob) return;
-            const age = new Date().getFullYear() - new Date(dob).getFullYear();
-            document.getElementById('v-age').value = age + " سنة";
-        },
+    openModal(id, editId = null) {
+        if(id === 'modal-vol') {
+            if(editId) {
+                const v = this.data.vols.find(x => x.id == editId);
+                document.getElementById('v-id').value = v.id;
+                document.getElementById('v-name').value = v.name;
+                document.getElementById('v-role').value = v.role;
+                document.getElementById('modal-vol-title').innerText = "تعديل بيانات المتطوع";
+            } else {
+                document.getElementById('v-id').value = '';
+                document.getElementById('v-name').value = '';
+                document.getElementById('modal-vol-title').innerText = "إضافة متطوع جديد";
+            }
+        }
+        document.getElementById(id).style.display = 'flex';
+    },
 
-        saveVol() {
-            const vol = {
-                id: Date.now(),
-                name: document.getElementById('v-name').value,
-                phone: document.getElementById('v-phone').value,
-                dob: document.getElementById('v-dob').value,
-                age: document.getElementById('v-age').value,
-                join: document.getElementById('v-join').value,
-                role: document.getElementById('v-role').value,
-                freeze: document.getElementById('v-freeze').value
-            };
-            if(!vol.name) return alert('برجاء إدخال الاسم');
+    closeModal(id) { document.getElementById(id).style.display = 'none'; },
+
+    calcAge() {
+        const dob = document.getElementById('v-dob').value;
+        if(dob) document.getElementById('v-age').value = (new Date().getFullYear() - new Date(dob).getFullYear()) + " سنة";
+    },
+
+    saveVol() {
+        const id = document.getElementById('v-id').value;
+        const vol = {
+            id: id || Date.now(),
+            name: document.getElementById('v-name').value,
+            role: document.getElementById('v-role').value,
+            age: document.getElementById('v-age').value,
+            freeze: document.getElementById('v-freeze').value,
+            join: document.getElementById('v-join').value
+        };
+        if(id) {
+            const index = this.data.vols.findIndex(x => x.id == id);
+            this.data.vols[index] = vol;
+        } else {
             this.data.vols.push(vol);
-            this.save(); this.renderVols(); this.populateVolSelect(); this.updateStats();
-            this.closeModal('modal-vol');
-        },
+        }
+        this.save(); this.renderAll(); this.closeModal('modal-vol');
+    },
 
-        renderVols() {
-            let html = `<table><thead><tr><th>الاسم</th><th>العمر</th><th>تاريخ الانضمام</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>`;
-            this.data.vols.forEach(v => {
-                html += `<tr>
-                    <td><b>${v.name}</b></td>
-                    <td>${v.age || '--'}</td>
-                    <td>${v.join || '--'}</td>
-                    <td>${v.role}</td>
-                    <td>${v.freeze === 'yes' ? '<span style="color:red">❄️ فريز</span>' : '<span style="color:green">✅ نشط</span>'}</td>
-                    <td><button class="btn btn-danger" onclick="app.deleteVol(${v.id})">حذف</button></td>
-                </tr>`;
-            });
-            document.getElementById('vols-table-container').innerHTML = html + `</tbody></table>`;
-        },
+    saveCrit() {
+        this.data.crit.push({
+            id: Date.now(),
+            name: document.getElementById('c-name').value,
+            type: document.getElementById('c-type').value,
+            target: document.getElementById('c-target').value,
+            weight: parseInt(document.getElementById('c-weight').value)
+        });
+        this.save(); this.renderAll(); this.closeModal('modal-crit');
+    },
 
-        deleteVol(id) {
-            if(confirm('سيتم حذف المتطوع وتاريخه نهائياً، هل أنتِ متأكدة؟')) {
-                this.data.vols = this.data.vols.filter(v => v.id !== id);
-                this.save(); this.renderVols(); this.populateVolSelect(); this.updateStats();
+    loadEvalFields() {
+        const vId = document.getElementById('eval-vol-select').value;
+        if(!vId) return document.getElementById('eval-form-body').style.display = 'none';
+        const vol = this.data.vols.find(v => v.id == vId);
+        
+        document.getElementById('vol-status-badge').innerHTML = `<span class="badge bg-fixed">${vol.role === 'lead' ? 'الدور الحالي: مسئول ملف' : 'الدور الحالي: متطوع ميداني'}</span>`;
+        
+        let html = '';
+        const types = {fixed:'📌 أساسي', variable:'🗓️ متغير', bonus:'⭐ بونص'};
+        for(let t in types) {
+            let filtered = this.data.crit.filter(c => c.type === t && (c.target === 'all' || (c.target === 'lead' && vol.role === 'lead')));
+            if(filtered.length) {
+                html += `<h4 style="margin:10px 0; color:var(--royal-green)">${types[t]}</h4><div class="grid-form">`;
+                filtered.forEach(c => {
+                    html += `<div><label>${c.name} (${c.weight})</label><input type="number" class="sc-in" data-type="${t}" data-max="${c.weight}" value="0"></div>`;
+                });
+                html += `</div>`;
             }
-        },
+        }
+        document.getElementById('dynamic-fields-container').innerHTML = html;
+        document.getElementById('eval-form-body').style.display = 'block';
+    },
 
-        saveCrit() {
-            const crit = {
-                id: Date.now(),
-                name: document.getElementById('c-name').value,
-                type: document.getElementById('c-type').value,
-                weight: parseInt(document.getElementById('c-weight').value)
-            };
-            this.data.crit.push(crit);
-            this.save(); this.renderCrit(); this.closeModal('modal-crit');
-        },
+    generateReport() {
+        const vId = document.getElementById('eval-vol-select').value;
+        const vol = this.data.vols.find(v => v.id == vId);
+        let score = 0, max = 0, bonus = 0;
+        document.querySelectorAll('.sc-in').forEach(i => {
+            let v = parseFloat(i.value) || 0;
+            if(i.dataset.type === 'bonus') bonus += v;
+            else { score += v; max += parseFloat(i.dataset.max); }
+        });
+        const pct = (((score+bonus)/max)*100).toFixed(1);
+        const idea = document.getElementById('eval-idea').value;
+        if(idea) this.data.ideas.unshift({name: vol.name, text: idea, date: new Date().toLocaleDateString()});
+        
+        document.getElementById('report-output').innerHTML = `
+            <div id="pdf-area">
+                <h2 style="text-align:center; color:var(--royal-green)">تقرير أداء زاد</h2><hr><br>
+                <p><b>المتطوع:</b> ${vol.name} | <b>التاريخ:</b> ${new Date().toLocaleDateString()}</p>
+                <h1 style="color:var(--primary); text-align:center; margin:20px 0">${pct}%</h1>
+                <p style="background:#f0fdf4; padding:15px; border-radius:10px; border:1px dashed var(--primary)">
+                    <b>التحليل الإنساني:</b> ${pct >= 85 ? 'طاقة قيادية متميزة وأثر واضح.' : 'جهد طيب وننتظر المزيد من التألق.'}
+                </p>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">تحميل PDF</button>
+        `;
+        document.getElementById('report-output').style.display = 'block';
+        this.save(); this.renderAll();
+    },
 
-        renderCrit() {
-            let html = `<table><thead><tr><th>بند التقييم</th><th>النوع</th><th>الدرجة</th><th>إجراء</th></tr></thead><tbody>`;
-            this.data.crit.forEach(c => {
-                html += `<tr><td>${c.name}</td><td>${c.type==='fixed'?'أساسي':'مسئولية'}</td><td>${c.weight}</td>
-                <td><button class="btn btn-danger" onclick="app.deleteCrit(${c.id})">حذف</button></td></tr>`;
-            });
-            document.getElementById('crit-table-container').innerHTML = html + `</tbody></table>`;
-        },
+    printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
 
-        deleteCrit(id) {
-            this.data.crit = this.data.crit.filter(c => c.id !== id);
-            this.save(); this.renderCrit();
-        },
+    renderAll() {
+        let vHtml = `<table><tr><th>الاسم</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr>`;
+        this.data.vols.forEach(v => {
+            vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'مسئول ملف':'ميداني'}</td><td>${v.freeze==='yes'?'❄️':'✅'}</td>
+            <td><button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل الدور</button></td></tr>`;
+        });
+        document.getElementById('vols-table-container').innerHTML = vHtml + `</table>`;
 
-        populateVolSelect() {
-            const sel = document.getElementById('eval-vol-select');
-            sel.innerHTML = '<option value="">-- اختر المتطوع من القائمة --</option>' + 
-                this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
-        },
+        let cHtml = `<table><tr><th>المعيار</th><th>التصنيف</th><th>الفئة</th></tr>`;
+        this.data.crit.forEach(c => {
+            cHtml += `<tr><td>${c.name}</td><td><span class="badge bg-fixed">${c.type}</span></td><td>${c.target==='all'?'الكل':'المسئولين'}</td></tr>`;
+        });
+        document.getElementById('crit-table-container').innerHTML = cHtml + `</table>`;
 
-        loadEvalFields() {
-            const vId = document.getElementById('eval-vol-select').value;
-            if(!vId) return document.getElementById('eval-form-body').style.display = 'none';
-            
-            const vol = this.data.vols.find(v => v.id == vId);
-            document.getElementById('freeze-notice').style.display = vol.freeze === 'yes' ? 'block' : 'none';
-            
-            let html = '<div class="grid-form">';
-            this.data.crit.forEach(c => {
-                if(c.type === 'resp' && vol.role !== 'مسئول ملف') return;
-                html += `<div><label>${c.name} (من ${c.weight})</label>
-                <input type="number" class="score-input" data-name="${c.name}" data-max="${c.weight}" value="0"></div>`;
-            });
-            document.getElementById('dynamic-fields-container').innerHTML = html + '</div>';
-            document.getElementById('eval-form-body').style.display = 'block';
-        },
-
-        generatePraise(percent, name) {
-            if(percent >= 90) return `ما شاء الله، ${name} نموذج يحتذى به في الالتزام، روحك الطيبة وأثرك في زاد لا يقدر بثمن. استمري بنفس الشغف.`;
-            if(percent >= 75) return `شكراً لمجهودك يا ${name}، إضافتك واضحة وتواجدك يفرق معنا كثيراً. نطمح لرؤية المزيد من إبداعك.`;
-            if(percent >= 50) return `نقدر مجهودك يا ${name}، نعلم أن لديكِ أفضل من ذلك بكثير. نحن معكِ دائماً لنتطور سوياً.`;
-            return `${name}، زاد هي بيتك الثاني، نحن هنا لندعمك. ننتظر عودتك القوية وتفاعلك المعهود.`;
-        },
-
-        generateReport() {
-            const vId = document.getElementById('eval-vol-select').value;
-            const vol = this.data.vols.find(v => v.id == vId);
-            let score = 0, totalMax = 0;
-
-            document.querySelectorAll('.score-input').forEach(input => {
-                score += parseFloat(input.value) || 0;
-                totalMax += parseFloat(input.dataset.max);
-            });
-
-            const percent = ((score / totalMax) * 100).toFixed(1);
-            const idea = document.getElementById('eval-idea').value;
-            const praiseText = this.generatePraise(percent, vol.name);
-
-            if(idea) {
-                this.data.ideas.push({vol: vol.name, text: idea, date: new Date().toLocaleDateString()});
-            }
-
-            const report = document.getElementById('report-output');
-            report.innerHTML = `
-                <div id="pdf-content" style="padding:30px; border:1px solid #eee">
-                    <h2 style="text-align:center; color:var(--royal-green)">تقرير أداء متطوع - مشروع زاد</h2>
-                    <p style="text-align:center">مؤسسة إنسان الخيرية</p>
-                    <hr style="margin:20px 0">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:20px">
-                        <div><b>الاسم:</b> ${vol.name}</div>
-                        <div><b>التاريخ:</b> ${new Date().toLocaleDateString()}</div>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:20px; border-radius:10px">
-                        <h2 style="color:var(--royal-green)">النسبة الإجمالية: ${percent}%</h2>
-                        <div><b>الحالة:</b> ${percent > 85 ? 'متميز 🌟' : 'نشط ✅'}</div>
-                    </div>
-                    <div class="praise-box">
-                        <b>الرسالة الإنسانية:</b><br>${praiseText}
-                    </div>
-                    <p style="margin-top:20px; font-size:12px; color:#666; text-align:center">هذا التقرير يهدف لتطوير المتطوع والحفاظ على روحه المعنوية.</p>
-                </div>
-                <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 حفظ التقرير PDF</button>
-            `;
-            report.style.display = 'block';
-            
-            this.data.evals.push({volId: vol.id, percent: percent, date: Date.now()});
-            this.save(); this.updateStats(); this.renderIdeas();
-        },
-
-        printPDF() {
-            const el = document.getElementById('pdf-content');
-            html2pdf().from(el).set({margin: 1, filename: 'ZAD_Report.pdf'}).save();
-        },
-
-        updateStats() {
-            document.getElementById('st-vols').innerText = this.data.vols.length;
-            document.getEle
+        document.getElementById('eval-vol-select').innerHTML = '<option value="">-- اختر --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+        document.getElementById('st-vols').innerText = this.data.vols.length;
+        document.getElementById('st-leads').innerText = this.data.vols.filter(v => v.role === 'lead').length;
+        document.getElementById('last-idea').innerText = this.data.ideas[0] ? this.data.ideas[0].name + ": " + this.data.ideas[0].text : "لا يوجد أفكار مسجلة";
+        document.getElementById('ideas-container').innerHTML = this.data.ideas.map(i => `<div class="box"><b>${i.name}:</b> ${i.text}</div>`).join('');
+    }
+};
+app.init();
+</script>
+</body>
+</html>
