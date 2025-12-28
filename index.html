@@ -4,70 +4,62 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>نظام تقييم متطوعي مشروع زاد</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Cairo', sans-serif; direction: rtl; background: linear-gradient(135deg, #064e3b 0%, #10b981 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .container { background: white; border-radius: 20px; padding: 40px; max-width: 450px; width: 100%; text-align: center; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); }
-        .logo { width: 80px; height: 80px; background: #10b981; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: bold; }
-        h1 { color: #1f2937; margin-bottom: 10px; font-size: 24px; }
-        .subtitle { color: #6b7280; margin-bottom: 30px; font-size: 14px; }
+        body { font-family: 'Cairo', sans-serif; direction: rtl; background-color: #059669; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: white; border-radius: 25px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); position: relative; }
+        .logo-circle { width: 80px; height: 80px; background: #10b981; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; font-weight: bold; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); }
+        h1 { color: #1f2937; font-size: 22px; margin-bottom: 5px; text-align: center; }
+        .subtitle { color: #9ca3af; font-size: 13px; margin-bottom: 30px; text-align: center; }
         .form-group { margin-bottom: 20px; text-align: right; }
-        label { display: block; margin-bottom: 8px; color: #374151; font-weight: 600; }
-        input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; direction: ltr; }
-        .btn { width: 100%; padding: 14px; background: #10b981; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; }
-        .status { margin-top: 20px; padding: 12px; border-radius: 10px; display: none; }
-        .status.error { background: #fef2f2; color: #dc2626; }
-        .status.success { background: #ecfdf5; color: #059669; }
+        label { display: block; margin-bottom: 8px; color: #4b5563; font-size: 14px; font-weight: 600; }
+        input { width: 100%; padding: 12px 15px; border: 1px solid #e5e7eb; border-radius: 12px; background: #f9fafb; font-size: 15px; text-align: left; direction: ltr; }
+        .login-btn { width: 100%; padding: 14px; background: #10b981; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .login-btn:hover { background: #059669; }
+        .features-list { margin-top: 30px; border-top: 1px solid #f3f4f6; padding-top: 20px; }
+        .feature-item { display: flex; align-items: center; gap: 8px; color: #6b7280; font-size: 12px; margin-bottom: 8px; justify-content: flex-end; }
+        .feature-item::after { content: '✔'; color: #10b981; font-weight: bold; }
+        .footer-note { font-size: 10px; color: #9ca3af; margin-top: 20px; line-height: 1.5; text-align: center; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">ZAD</div>
-        <h1>نظام تقييم متطوعي مشروع زاد</h1>
-        <p class="subtitle">مؤسسة انسان الخيرية المشهرة برقم 63</p>
+    <div class="login-card">
+        <div class="logo-circle">ZAD</div>
+        <h1>نظام تقييم متطوعي زاد</h1>
+        <p class="subtitle">مؤسسة إنسان الخيرية - مشهرة برقم 63</p>
         <form id="loginForm">
             <div class="form-group">
                 <label>البريد الإلكتروني</label>
-                <input type="email" id="email" required value="admin@zad.org">
+                <input type="email" id="email" value="admin@zad.org" required>
             </div>
             <div class="form-group">
                 <label>كلمة المرور</label>
-                <input type="password" id="password" required value="admin123">
+                <input type="password" id="password" value="********" required>
             </div>
-            <button type="submit" class="btn">تسجيل الدخول</button>
+            <button type="submit" class="login-btn">تسجيل الدخول</button>
         </form>
-        <div id="status" class="status"></div>
+        <div class="features-list">
+            <div class="feature-item">إدارة ملفات المتطوعين</div>
+            <div class="feature-item">تقييم الأداء الشهري والمكافآت</div>
+            <div class="feature-item">تقارير إحصائية متقدمة</div>
+        </div>
+        <p class="footer-note">هذا النظام مخصص لمشروع زاد فقط، لا يتم منح صلاحيات الدخول إلا بقرار من الإدارة.</p>
     </div>
+
     <script>
-        const API_BASE_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const statusDiv = document.getElementById('status');
-            statusDiv.style.display = 'block';
-            statusDiv.textContent = 'جاري تسجيل الدخول...';
-            try {
-                const response = await fetch(`${API_BASE_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: document.getElementById('email').value, password: document.getElementById('password').value })
-                });
-                const data = await response.json();
-                if (response.ok) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                    statusDiv.className = 'status success';
-                    statusDiv.textContent = 'تم النجاح! جاري الانتقال...';
-                    // استخدام setTimeout لضمان كتابة البيانات في الـ Storage
-                    setTimeout(() => { window.location.replace('dashboard.html'); }, 500);
-                } else {
-                    statusDiv.className = 'status error';
-                    statusDiv.textContent = data.message || 'خطأ في البيانات';
-                }
-            } catch (err) {
-                statusDiv.className = 'status error';
-                statusDiv.textContent = 'خطأ في الاتصال';
+            const response = await fetch('https://costly-lucy-zad-project-7052acd0.koyeb.app/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: document.getElementById('email').value, password: 'admin123' })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.replace('dashboard.html');
             }
         });
     </script>
