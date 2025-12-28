@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>لوحة تحكم زاد - النسخة الشاملة</title>
+    <title>لوحة تحكم زاد - النسخة الاحترافية</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,13 +23,19 @@
         .nav-btn.dark { background: #065f46; }
 
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); }
-        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 90%; max-width: 900px; border-radius: 20px; position: relative; max-height: 85vh; overflow-y: auto; }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 95%; max-width: 1000px; border-radius: 20px; position: relative; max-height: 85vh; overflow-y: auto; }
         .close { position: absolute; left: 20px; top: 15px; font-size: 28px; cursor: pointer; color: #dc2626; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .action-bar { display: flex; justify-content: flex-end; margin-bottom: 15px; }
+        .add-btn { background: #059669; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-family: 'Cairo'; font-weight: 600; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 5px; }
         th, td { border: 1px solid #e5e7eb; padding: 12px; text-align: center; font-size: 14px; }
         th { background: #f0fdf4; color: #059669; font-weight: bold; }
-        tr:nth-child(even) { background-color: #f9fafb; }
+        
+        /* أزرار الأكشنز */
+        .btn-edit { background: #3b82f6; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-left: 5px; }
+        .btn-delete { background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -43,7 +49,7 @@
 </div>
 
 <div class="main-content">
-    <div class="stats-grid" id="stats-container">
+    <div class="stats-grid">
         <div class="stat-card"><div class="stat-val" id="total-v">0</div><div>متطوع نشط</div></div>
         <div class="stat-card"><div class="stat-val" id="total-e">0</div><div>تقييمات الشهر</div></div>
         <div class="stat-card"><div class="stat-val" id="total-a">0</div><div>تنبيهات نشطة</div></div>
@@ -65,8 +71,8 @@
 <div id="dataModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <h3 id="modalTitle" style="color: #059669; margin-bottom: 15px; border-bottom: 2px solid #f0fdf4; padding-bottom: 10px;">عرض البيانات</h3>
-        <div id="modalBody">جاري جلب البيانات من السيرفر...</div>
+        <h3 id="modalTitle" style="color: #059669; margin-bottom: 10px;">عرض البيانات</h3>
+        <div id="modalAction" class="action-bar"></div> <div id="modalBody">جاري جلب البيانات...</div>
     </div>
 </div>
 
@@ -87,15 +93,18 @@
             document.getElementById('total-e').innerText = d.monthlyEvaluations || 0;
             document.getElementById('total-a').innerText = d.activeAlerts || 0;
             document.getElementById('avg-p').innerText = (d.avgPerformance || 0) + "%";
-        } catch (e) { console.error("Stats fail"); }
+        } catch (e) { console.error("Stats Error"); }
     }
 
     async function fetchData(type) {
         const modal = document.getElementById('dataModal');
         const body = document.getElementById('modalBody');
         const title = document.getElementById('modalTitle');
+        const action = document.getElementById('modalAction');
+        
         modal.style.display = "block";
         body.innerHTML = "جاري التحميل...";
+        action.innerHTML = ""; // تصفير الأكشن بار
 
         let endpoint = (type === 'volunteers') ? '/volunteers' : `/${type}`;
         
@@ -103,58 +112,53 @@
             const res = await fetch(`${API_BASE}${endpoint}`);
             const data = await res.json();
             
-            switch(type) {
-                case 'volunteers':
-                    title.innerText = "قائمة المتطوعين";
-                    renderTable(body, ['الاسم', 'الهاتف', 'الحالة'], data.volunteers.map(v => [v.full_name, v.phone || '--', v.is_active ? 'نشط' : 'غير نشط']));
-                    break;
-                case 'evaluations':
-                    title.innerText = "التقييمات الشهرية";
-                    const evals = data.evaluations || data;
-                    renderTable(body, ['المتطوع', 'الشهر', 'النسبة', 'الحالة'], evals.map(e => [e.volunteer_name || 'مجهول', `${e.evaluation_month}/${e.evaluation_year}`, e.percentage + '%', e.status]));
-                    break;
-                case 'reports':
-                    title.innerText = "التقارير والإحصائيات";
-                    body.innerHTML = "<p style='text-align:center'>تم تحديث الإحصائيات في الصفحة الرئيسية بنجاح.</p>";
-                    break;
-                case 'alerts':
-                    title.innerText = "إدارة التنبيهات";
-                    const alerts = data.alerts || [];
-                    renderTable(body, ['النوع', 'الوصف', 'الحالة'], alerts.map(a => [a.type, a.description, a.is_resolved ? 'محلول' : 'نشط']));
-                    break;
-                case 'freeze':
-                    title.innerText = "سجلات التجميد";
-                    const records = data.records || [];
-                    renderTable(body, ['المتطوع', 'بداية التجميد', 'السبب'], records.map(r => [r.volunteer_id, new Date(r.start_date).toLocaleDateString(), r.reason]));
-                    break;
-                case 'rewards':
-                    title.innerText = "المكافآت";
-                    const rewards = data.rewards || [];
-                    renderTable(body, ['المتطوع', 'نوع المكافأة', 'التاريخ'], rewards.map(rw => [rw.volunteer_name, rw.reward_type, rw.date]));
-                    break;
-                case 'criteria':
-                    title.innerText = "معايير التقييم";
-                    renderTable(body, ['المعيار', 'الدرجة القصوى'], [['الالتزام', '25'], ['الأداء', '50'], ['السلوك', '25']]);
-                    break;
-                default:
-                    body.innerHTML = "جاري جلب البيانات...";
+            if (type === 'volunteers') {
+                title.innerText = "إدارة المتطوعين";
+                action.innerHTML = `<button class="add-btn" onclick="alert('سيتم فتح فورم إضافة متطوع')">+ إضافة متطوع جديد</button>`;
+                renderTable(body, ['الاسم', 'الهاتف', 'الحالة', 'العمليات'], data.volunteers.map(v => [
+                    v.full_name, 
+                    v.phone || '--', 
+                    v.is_active ? 'نشط' : 'غير نشط',
+                    `<button class="btn-edit" onclick="editItem('volunteer', '${v.id}')">تعديل</button>
+                     <button class="btn-delete" onclick="deleteItem('volunteer', '${v.id}')">حذف</button>`
+                ]));
+            } else if (type === 'evaluations') {
+                title.innerText = "سجل التقييمات";
+                action.innerHTML = `<button class="add-btn" onclick="alert('سيتم فتح فورم تقييم جديد')">+ إضافة تقييم</button>`;
+                const evals = data.evaluations || data;
+                renderTable(body, ['المتطوع', 'النسبة', 'الحالة', 'العمليات'], evals.map(e => [
+                    e.volunteer_name || 'مجهول', 
+                    e.percentage + '%', 
+                    e.status,
+                    `<button class="btn-edit" onclick="editItem('evaluation', '${e.id}')">تعديل</button>`
+                ]));
+            } else {
+                body.innerHTML = "<p style='text-align:center'>تم جلب البيانات، جاري تنسيق هذا الجدول.</p>";
             }
         } catch (e) {
-            body.innerHTML = "لا يوجد بيانات حالياً في هذا القسم أو المسار غير متاح.";
+            body.innerHTML = "لا يوجد بيانات أو السيرفر غير مستجيب.";
         }
     }
 
     function renderTable(container, headers, rows) {
-        if (!rows || rows.length === 0) {
-            container.innerHTML = "لا توجد سجلات لعرضها حالياً.";
-            return;
-        }
+        if (!rows || rows.length === 0) { container.innerHTML = "لا توجد سجلات."; return; }
         let html = `<table><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>`;
         rows.forEach(row => {
             html += `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
         });
         html += `</table>`;
         container.innerHTML = html;
+    }
+
+    // وظائف الأكشنز (هتحتاج ربط مع الـ API بتاع التعديل والحذف)
+    function editItem(type, id) {
+        alert(`تعديل الـ ${type} اللي رقمه: ${id}`);
+    }
+
+    function deleteItem(type, id) {
+        if(confirm('هل أنت متأكد من الحذف؟')) {
+            alert(`سيتم حذف الـ ${type} صاحب المعرف: ${id}`);
+        }
     }
 
     function closeModal() { document.getElementById('dataModal').style.display = "none"; }
