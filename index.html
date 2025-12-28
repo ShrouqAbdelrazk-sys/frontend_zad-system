@@ -119,7 +119,6 @@
     </div>
 
     <script>
-        // رابط السيرفر الحقيقي الخاص بكِ في Koyeb
         const API_BASE_URL = 'https://costly-lucy-zad-project-7052acd0.koyeb.app/api';
         
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -142,19 +141,25 @@
                 const data = await response.json();
                 
                 if (response.ok) {
-                    statusDiv.className = 'status success';
-                    statusDiv.textContent = `مرحباً ${data.user.full_name}! تم تسجيل الدخول بنجاح`;
+                    // التعديل الأساسي: تنظيف الـ Storage وحفظ البيانات بشكل قطعي
+                    localStorage.clear();
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                    setTimeout(() => { window.location.href = './dashboard.html'; }, 1500);
+
+                    statusDiv.className = 'status success';
+                    statusDiv.textContent = `مرحباً ${data.user.full_name}! تم تسجيل الدخول بنجاح`;
+                    
+                    // استخدام replace لضمان انتقال الجلسة بشكل سليم
+                    setTimeout(() => { 
+                        window.location.replace('dashboard.html'); 
+                    }, 1000);
                 } else {
                     statusDiv.className = 'status error';
                     statusDiv.textContent = data.message || 'خطأ في بيانات الدخول';
                 }
             } catch (error) {
-                // لو السيرفر مطلع 500 أو مش شغال، الرسالة دي هتظهر
                 statusDiv.className = 'status error';
-                statusDiv.textContent = 'خطأ داخلي في الخادم - تأكدي من إعدادات DATABASE_URL في Koyeb';
+                statusDiv.textContent = 'حدث خطأ في الاتصال بالسيرفر، تأكدي من استجابة Koyeb';
             }
         });
     </script>
