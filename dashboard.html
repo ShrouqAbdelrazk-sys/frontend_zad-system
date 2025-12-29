@@ -32,8 +32,8 @@
         
         .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; font-size: 13px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #fee2e2; color: var(--danger); }
-        .btn-edit { background: #e0f2fe; color: #0369a1; }
+        .btn-danger { background: #fee2e2; color: var(--danger); padding: 5px 10px; }
+        .btn-edit { background: #e0f2fe; color: #0369a1; padding: 5px 10px; margin-left: 5px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { text-align: right; background: #f8fafc; padding: 15px; color: var(--royal-green); border-bottom: 2px solid var(--primary); }
@@ -56,15 +56,15 @@
 <div class="sidebar">
     <div class="logo">ZAD Altimate</div>
     <div class="nav-item active" onclick="app.showPage('dash')">📊 الرئيسية</div>
-    <div class="nav-item" onclick="app.showPage('vols')">👥 المتطوعين</div>
-    <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقرير</div>
-    <div class="nav-item" onclick="app.showPage('crit')">⚙️ المعايير</div>
+    <div class="nav-item" onclick="app.showPage('vols')">👥 متطوعين زاد</div>
+    <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقارير</div>
+    <div class="nav-item" onclick="app.showPage('crit')">⚙️  معايير التقييم</div>
     <div class="nav-item" onclick="app.showPage('vault')">💡 بنك الأفكار</div>
 </div>
 
 <div class="main">
     <div id="page-dash" class="page-section active">
-        <div class="header"><h1>مرحباً بعودتك.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button></div>
+        <div class="header"><h1> مرحباً بعودتك صديقي.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button></div>
         <div class="box">
             <h3>📈 إحصائيات سريعة</h3>
             <div style="display:flex; gap:20px; margin-top:15px">
@@ -142,13 +142,13 @@
 
 <div id="modal-crit" class="modal">
     <div class="modal-content">
-        <h3>تعريف معيار جديد</h3><br>
-        <input type="text" id="c-name" placeholder="اسم المعيار">
+        <h3 id="modal-crit-title">تعريف معيار جديد</h3><br>
+        <input type="hidden" id="c-id"> <input type="text" id="c-name" placeholder="اسم المعيار">
         <div class="grid-form" style="margin-top:10px">
             <select id="c-type">
                 <option value="fixed">ثابت</option>
                 <option value="variable">متغير</option>
-                <option value="bonus">بونص</option>
+                <option value="bonus">+بونص</option>
             </select>
             <select id="c-target">
                 <option value="all">للجميع</option>
@@ -203,6 +203,23 @@ const app = {
                 document.getElementById('modal-vol-title').innerText = "إضافة متطوع جديد";
             }
         }
+        
+        // تعديل المعيار
+        if(id === 'modal-crit') {
+            if(editId) {
+                const c = this.data.crit.find(x => x.id == editId);
+                document.getElementById('c-id').value = c.id;
+                document.getElementById('c-name').value = c.name;
+                document.getElementById('c-type').value = c.type;
+                document.getElementById('c-target').value = c.target;
+                document.getElementById('c-weight').value = c.weight;
+                document.getElementById('modal-crit-title').innerText = "تعديل المعيار";
+            } else {
+                document.getElementById('c-id').value = '';
+                document.getElementById('c-name').value = '';
+                document.getElementById('modal-crit-title').innerText = "تعريف معيار جديد";
+            }
+        }
         document.getElementById(id).style.display = 'flex';
     },
 
@@ -233,14 +250,30 @@ const app = {
     },
 
     saveCrit() {
-        this.data.crit.push({
-            id: Date.now(),
+        const id = document.getElementById('c-id').value;
+        const critObj = {
+            id: id ? parseInt(id) : Date.now(),
             name: document.getElementById('c-name').value,
             type: document.getElementById('c-type').value,
             target: document.getElementById('c-target').value,
             weight: parseInt(document.getElementById('c-weight').value)
-        });
+        };
+
+        if(id) {
+            const index = this.data.crit.findIndex(x => x.id == id);
+            this.data.crit[index] = critObj;
+        } else {
+            this.data.crit.push(critObj);
+        }
+
         this.save(); this.renderAll(); this.closeModal('modal-crit');
+    },
+
+    deleteCrit(id) {
+        if(confirm("هل تريد حذف هذا المعيار؟")) {
+            this.data.crit = this.data.crit.filter(c => c.id != id);
+            this.save(); this.renderAll();
+        }
     },
 
     loadEvalFields() {
@@ -300,13 +333,21 @@ const app = {
         let vHtml = `<table><tr><th>الاسم</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr>`;
         this.data.vols.forEach(v => {
             vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'مسئول ملف':'ميداني'}</td><td>${v.freeze==='yes'?'❄️':'✅'}</td>
-            <td><button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل الدور</button></td></tr>`;
+            <td><button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل</button></td></tr>`;
         });
         document.getElementById('vols-table-container').innerHTML = vHtml + `</table>`;
 
-        let cHtml = `<table><tr><th>المعيار</th><th>التصنيف</th><th>الفئة</th></tr>`;
+        let cHtml = `<table><tr><th>المعيار</th><th>التصنيف</th><th>الفئة</th><th>إجراء</th></tr>`;
         this.data.crit.forEach(c => {
-            cHtml += `<tr><td>${c.name}</td><td><span class="badge bg-fixed">${c.type}</span></td><td>${c.target==='all'?'الكل':'المسئولين'}</td></tr>`;
+            cHtml += `<tr>
+                <td>${c.name}</td>
+                <td><span class="badge bg-fixed">${c.type}</span></td>
+                <td>${c.target==='all'?'الكل':'المسئولين'}</td>
+                <td>
+                    <button class="btn btn-edit" onclick="app.openModal('modal-crit', ${c.id})">✏️</button>
+                    <button class="btn btn-danger" onclick="app.deleteCrit(${c.id})">🗑️</button>
+                </td>
+            </tr>`;
         });
         document.getElementById('crit-table-container').innerHTML = cHtml + `</table>`;
 
