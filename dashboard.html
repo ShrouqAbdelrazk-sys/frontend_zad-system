@@ -40,7 +40,6 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(4px); }
         .modal-content { background: white; width: 600px; padding: 30px; border-radius: 20px; box-shadow: 0 20px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; }
         .idea-card { padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -87,7 +86,6 @@
                         <textarea id="eval-idea" placeholder="لو عنده فكرة جديدة اكتبها هنا لتُحفظ في بنك الأفكار"></textarea>
                     </div>
                 </div>
-                <p style="color: #64748b; font-size: 13px; margin-bottom: 10px;">* بمجرد الضغط، سيقوم النظام بتحليل الدرجات وكتابة التقرير (نقاط القوة، الضعف، الخطة، والرسالة) آلياً.</p>
                 <button class="btn btn-primary" style="width:100%" onclick="app.generateReport()">توليد تقرير ذكي + حفظ PDF 🚀</button>
             </div>
         </div>
@@ -95,7 +93,7 @@
     </div>
 
     <div id="page-crit" class="page-section">
-        <div class="header"><h1 class="page-title">المعايير والفئات</h1> <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة معيار</button></div>
+        <div class="header"><h1 class="page-title">المعايير والفئات</h1> <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة معيار جديد</button></div>
         <div class="box"><div id="crit-table-container"></div></div>
     </div>
 
@@ -114,17 +112,20 @@
             <div><label>الموبايل</label><input type="tel" id="v-phone"></div>
         </div>
         <div class="grid-form">
+            <div><label>تاريخ الانضمام</label><input type="date" id="v-join-date"></div>
             <div><label>الدور</label><select id="v-role">
                 <option value="field">متطوع ميداني</option>
                 <option value="lead">مسئول ملف</option>
                 <option value="admin">متطوع إداري</option>
             </select></div>
+        </div>
+        <div class="grid-form">
             <div><label>حالة الفريز</label><select id="v-freeze">
                 <option value="no">نشط ✅</option>
                 <option value="yes">فريز ❄️</option>
             </select></div>
+            <div><label>مرات الفريز السابقة</label><input type="number" id="v-freeze-count" value="0"></div>
         </div>
-        <div><label>عدد مرات الفريز السابقة</label><input type="number" id="v-freeze-count" value="0"></div><br>
         <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">حفظ البيانات</button>
         <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-vol')">إغلاق</button>
     </div>
@@ -142,7 +143,13 @@
                 <option value="lead">مسئولية</option>
             </select></div>
         </div>
-        <div><label>الوزن (الدرجة القصوى)</label><input type="number" id="c-weight"></div><br>
+        <div class="grid-form">
+            <div><label>الوزن (الدرجة القصوى)</label><input type="number" id="c-weight"></div>
+        </div>
+        <div>
+            <label>وصف المعيار (اختياري)</label>
+            <textarea id="c-desc" placeholder="اشرح هنا المعيار ده بيقيم إيه بالظبط..."></textarea>
+        </div><br>
         <button class="btn btn-primary" style="width:100%" onclick="app.saveCrit()">حفظ المعيار</button>
         <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-crit')">إلغاء</button>
     </div>
@@ -183,6 +190,7 @@ const app = {
                 document.getElementById('v-id').value = v.id;
                 document.getElementById('v-name').value = v.name;
                 document.getElementById('v-phone').value = v.phone;
+                document.getElementById('v-join-date').value = v.join_date || '';
                 document.getElementById('v-role').value = v.role;
                 document.getElementById('v-freeze').value = v.freeze;
                 document.getElementById('v-freeze-count').value = v.freeze_count || 0;
@@ -192,24 +200,23 @@ const app = {
                 document.getElementById('c-name').value = c.name;
                 document.getElementById('c-type').value = c.type;
                 document.getElementById('c-weight').value = c.weight;
+                document.getElementById('c-desc').value = c.description || '';
             }
         }
     },
     closeModal(mid) {
         document.getElementById(mid).style.display = 'none';
-        document.querySelectorAll(`${mid} input`).forEach(i => i.value='');
+        document.querySelectorAll(`${mid} input, ${mid} textarea`).forEach(i => i.value='');
     },
     async saveVol() {
         const id = document.getElementById('v-id').value;
-        const freezeVal = document.getElementById('v-freeze').value;
-        let currentCount = id ? (this.data.vols.find(x => x.id == id).freeze_count || 0) : 0;
-        if(freezeVal === 'yes' && currentCount >= 2) return alert('⚠️ استنفذ الزادي مرات الفريز السنوية!');
         const payload = {
             name: document.getElementById('v-name').value,
             phone: document.getElementById('v-phone').value,
+            join_date: document.getElementById('v-join-date').value,
             role: document.getElementById('v-role').value,
-            freeze: freezeVal,
-            freeze_count: freezeVal === 'yes' ? currentCount + 1 : currentCount
+            freeze: document.getElementById('v-freeze').value,
+            freeze_count: parseInt(document.getElementById('v-freeze-count').value) || 0
         };
         if(id) await db.from('volunteers').update(payload).eq('id', id);
         else await db.from('volunteers').insert([payload]);
@@ -220,7 +227,8 @@ const app = {
         const payload = {
             name: document.getElementById('c-name').value,
             type: document.getElementById('c-type').value,
-            weight: parseInt(document.getElementById('c-weight').value)
+            weight: parseInt(document.getElementById('c-weight').value),
+            description: document.getElementById('c-desc').value
         };
         if(id) await db.from('criteria').update(payload).eq('id', id);
         else await db.from('criteria').insert([payload]);
@@ -240,7 +248,7 @@ const app = {
         base.forEach(c => html += `<div><label>${c.n}</label><input type="number" class="sc-in" data-max="${c.w}" value="0"></div>`);
         this.data.crit.forEach(c => {
             if(c.type === 'lead' && vol.role !== 'lead') return;
-            html += `<div><label>${c.name}</label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
+            html += `<div><label>${c.name} <small style="color:#64748b; font-weight:normal;">(${c.description || ''})</small></label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
         });
         document.getElementById('dynamic-fields-container').innerHTML = html + '</div>';
         document.getElementById('eval-form-body').style.display = 'block';
@@ -248,66 +256,67 @@ const app = {
     async generateReport() {
         const vId = document.getElementById('eval-vol-select').value;
         const vol = this.data.vols.find(v => v.id == vId);
-        if(!vol) return alert("من فضلك اختاري زادي أولاً");
         let score = 0, max = 0; let strengths = [], weaknesses = [];
         document.querySelectorAll('.sc-in').forEach(input => {
             let val = parseFloat(input.value) || 0;
             let m = parseFloat(input.dataset.max);
-            let label = input.previousElementSibling.innerText;
+            let label = input.previousElementSibling.innerText.split('(')[0];
             score += val; max += m;
             if (val >= m * 0.8) strengths.push(label);
             else if (val < m * 0.6) weaknesses.push(label);
         });
         const pct = ((score/max)*100).toFixed(1);
-        const plans = [
-            `من الضروري تكثيف الجهود في (${weaknesses.join(' و ')}) لضمان توازن الأداء في الفترة القادمة.`,
-            `نقترح خطة تدريبية مركزة على (${weaknesses.join(' و ')}) لرفع الكفاءة العامة للزادي.`,
-            `نوصي بالتركيز على تحسين معدلات الالتزام في (${weaknesses.join(' و ')}) بالتعاون مع مسؤول الملف.`
-        ];
-        const motivations = {
-            high: [`أنتِ فخر لزاد يا ${vol.name}، عطاؤكِ المستمر هو المحرك الأساسي لنجاحنا!`, `نموذج مشرف للزادي الشغوف، استمري في إبهارنا بطاقتكِ.`],
-            mid: [`أداء ثابت ومستقر، وبقليل من التركيز على نقاط التحسين ستصلين للامتياز قريباً.`, `مجهود مشكور جداً، ننتظر منكِ انطلاقة أقوى في الشهر القادم.`],
-            low: [`البداية تحتاج صبراً، ونحن نثق أنكِ تمتلكين الإرادة لتجاوز التحديات والتميز.`, `ركزي على خطة التطوير وسنرى منكِ نسخة أقوى بإذن الله.`]
-        };
-        const randomPlan = weaknesses.length > 0 ? plans[Math.floor(Math.random() * plans.length)] : "أداء مثالي؛ نوصي ببدء التجهيز لمهام قيادية.";
-        let status = pct >= 90 ? 'high' : (pct >= 70 ? 'mid' : 'low');
-        const randomMotiv = motivations[status][Math.floor(Math.random() * motivations[status].length)];
         const ideaText = document.getElementById('eval-idea').value;
         if(ideaText) await db.from('ideas').insert([{ name: vol.name, text: ideaText, status: 'pending' }]);
+        
         document.getElementById('report-output').innerHTML = `
             <div id="pdf-area" style="padding:40px; border: 4px solid var(--secondary); border-radius:15px; background:#fff; direction:rtl;">
-                <div style="text-align:center; margin-bottom:20px">
-                    <h1 style="color:var(--secondary); margin:0">بطاقة أداء زادي 🌿</h1>
-                    <p style="color:var(--primary)">تقارير متطوعين مشروع زاد - ${new Date().toLocaleDateString('ar-EG')}</p>
-                </div>
-                <div style="font-size:18px; line-height:1.8"><b>الزادي:</b> ${vol.name} <br> <b>التقييم العام:</b> <span style="color:var(--primary); font-weight:bold; font-size:22px">${pct}%</span></div>
-                <hr style="margin:20px 0; border:0.5px solid #eee">
-                <p style="color:var(--secondary)"><b>🌟 نقاط التميز:</b> ${strengths.length > 0 ? strengths.join(' - ') : 'قيد الرصد'}</p>
-                <p style="color:var(--danger)"><b>⚠️ مجالات التطوير:</b> ${weaknesses.length > 0 ? weaknesses.join(' - ') : 'لا يوجد ملاحظات'}</p>
-                <div style="background:#f0fdf4; padding:15px; border-right:6px solid var(--primary); margin:20px 0"><b>📈 الرؤية التطويرية:</b><br> ${randomPlan}</div>
-                <div style="text-align:center; margin-top:30px; font-style:italic; font-size:18px; color:var(--secondary)"> "${randomMotiv}" </div>
+                <h1 style="text-align:center; color:var(--secondary)">بطاقة أداء زادي 🌿</h1>
+                <p style="text-align:center; color:var(--primary)">${new Date().toLocaleDateString('ar-EG')}</p>
+                <div style="font-size:18px; margin-top:20px"><b>الزادي:</b> ${vol.name} | <b>النسبة:</b> ${pct}%</div>
+                <hr style="margin:20px 0">
+                <p><b>🌟 نقاط التميز:</b> ${strengths.join(' - ') || 'قيد الرصد'}</p>
+                <p><b>⚠️ مجالات التطوير:</b> ${weaknesses.join(' - ') || 'لا يوجد'}</p>
             </div>
-            <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 حفظ وتحميل التقرير PDF</button> `;
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 تحميل PDF</button> `;
         document.getElementById('report-output').style.display = 'block';
-        window.scrollTo(0, document.getElementById('report-output').offsetTop);
     },
-    printPDF() {
-        const element = document.getElementById('pdf-area');
-        const opt = { margin: 0.5, filename: 'ZAD_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
-        html2pdf().set(opt).from(element).save();
-    },
+    printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
     renderVols() {
-        let html = `<table><thead><tr><th>الاسم</th><th>الفريز</th><th>الدور</th><th>إجراءات</th></tr></thead><tbody>`;
+        let html = `<table><thead><tr><th>الاسم</th><th>الموبايل</th><th>تاريخ الانضمام</th><th>الفريز</th><th>الدور</th><th>إجراءات</th></tr></thead><tbody>`;
         this.data.vols.forEach(v => {
-            html += `<tr><td><b>${v.name}</b></td><td>${v.freeze_count || 0}/2</td><td>${v.role === 'lead' ? '⭐ مسؤول' : 'متطوع'}</td>
+            html += `<tr><td><b>${v.name}</b></td><td>${v.phone || '-'}</td><td>${v.join_date || '-'}</td><td>${v.freeze_count || 0}/2</td><td>${v.role}</td>
             <td><button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button>
             <button class="btn btn-danger" onclick="app.deleteItem('volunteers', '${v.id}')">🗑️</button></td></tr>`;
         });
         document.getElementById('vols-table-container').innerHTML = html + `</tbody></table>`;
     },
     renderCrit() {
-        let html = `<table><thead><tr><th>المعيار</th><th>الوزن</th><th>إجراءات</th></tr></thead><tbody>`;
+        let html = `<table><thead><tr><th>المعيار</th><th>الوصف</th><th>النوع</th><th>الوزن</th><th>إجراءات</th></tr></thead><tbody>`;
         this.data.crit.forEach(c => {
-            html += `<tr><td>${c.name}</td><td>${c.weight}</td>
+            html += `<tr><td>${c.name}</td><td style="font-size:12px; color:#64748b">${c.description || '-'}</td><td>${c.type}</td><td>${c.weight}</td>
             <td><button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button>
-            <button class="btn btn-danger" onclick="app.deleteItem('criteria', '${c.id}')">🗑️</button></
+            <button class="btn btn-danger" onclick="app.deleteItem('criteria', '${c.id}')">🗑️</button></td></tr>`;
+        });
+        document.getElementById('crit-table-container').innerHTML = html + `</tbody></table>`;
+    },
+    renderIdeas() {
+        let html = '';
+        this.data.ideas.forEach(i => { html += `<div class="idea-card"><div><b>${i.name}:</b> ${i.text}</div></div>`; });
+        document.getElementById('ideas-container').innerHTML = html || 'لا توجد أفكار.';
+    },
+    async deleteItem(table, id) { if(confirm("حذف؟")) { await db.from(table).delete().eq('id', id); this.init(); } },
+    updateStats() {
+        document.getElementById('st-vols').innerText = this.data.vols.length;
+        document.getElementById('st-freeze').innerText = this.data.vols.filter(v => v.freeze === 'yes').length;
+        document.getElementById('st-ideas').innerText = this.data.ideas.length;
+    },
+    populateVolSelect() {
+        const sel = document.getElementById('eval-vol-select');
+        sel.innerHTML = '<option value="">-- اختر متطوعاً --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+    }
+};
+app.init();
+</script>
+</body>
+</html>
