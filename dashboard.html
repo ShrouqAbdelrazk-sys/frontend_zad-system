@@ -68,7 +68,7 @@
     <div class="nav-item active" onclick="app.showPage('dash')">📊 ملخص زاد</div>
     <div class="nav-item" onclick="app.showPage('vols')">👥 الزاديون</div>
     <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقارير</div>
-    <div class="nav-item" onclick="app.showPage('crit')">⚙️ المعايير</div>
+    <div class="nav-item" onclick="app.showPage('crit')">⚙️ معايير التقييم</div>
     <div class="nav-item" onclick="app.showPage('vault')">💡 بنك الأفكار</div>
 </div>
 
@@ -89,32 +89,26 @@
         </div>
     </div>
 
-    <div id="page-vols" class="page-section">
-        <div class="header"><h1 class="page-title">إدارة المتطوعين</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">إضافة جديد</button></div>
-        <div class="box"><div id="vols-table-container"></div></div>
-    </div>
-
-    <div id="page-eval" class="page-section">
-        <div class="header"><h1 class="page-title">التقييم الاحترافي</h1></div>
+        <div id="page-eval" class="page-section">
+        <div class="header"><h1 class="page-title">التقييم الذكي المطور 🌿</h1></div>
         <div class="box">
             <label>اختر المتطوع:</label>
             <select id="eval-vol-select" onchange="app.loadEvalFields()"></select>
+            
             <div id="eval-form-body" style="display:none; margin-top:20px;">
                 <div id="dynamic-fields-container"></div>
+                
                 <hr style="margin:20px 0">
+                
                 <div class="grid-form">
-                    <div><label>💪 نقاط القوة</label><textarea id="eval-strength"></textarea></div>
-                    <div><label>⚠️ نقاط الضعف</label><textarea id="eval-weakness"></textarea></div>
+                    <div>
+                        <label>💡 فكرة المتطوع (اختياري)</label>
+                        <textarea id="eval-idea" placeholder="لو عنده فكرة جديدة اكتبها هنا لتُحفظ في بنك الأفكار"></textarea>
+                    </div>
                 </div>
-                <div class="grid-form">
-                    <div><label>📈 خطة التطوير</label><textarea id="eval-plan" placeholder="كيف سنعالج نقطة الضعف؟"></textarea></div>
-                    <div><label>🌟 رسالة تحفيزية</label><textarea id="eval-motivation"></textarea></div>
-                </div>
-                <div class="grid-form">
-                    <div><label>💡 فكرة المتطوع</label><textarea id="eval-idea"></textarea></div>
-                    <div><label>🗣️ تعليق شخصي على الزادي</label><textarea id="eval-personal-note"></textarea></div>
-                </div>
-                <button class="btn btn-primary" style="width:100%" onclick="app.generateReport()">توليد التقرير المطور</button>
+                
+                <p style="color: #64748b; font-size: 13px; margin-bottom: 10px;">* بمجرد الضغط، سيقوم النظام بتحليل الدرجات وكتابة التقرير (نقاط القوة، الضعف، الخطة، والرسالة) آلياً.</p>
+                <button class="btn btn-primary" style="width:100%" onclick="app.generateReport()">توليد تقرير ذكي + حفظ PDF 🚀</button>
             </div>
         </div>
         <div id="report-output" class="box" style="display:none;"></div>
@@ -261,9 +255,9 @@
             const vol = this.data.vols.find(v => v.id == vId);
             let html = '<div class="grid-form">';
             const base = [
-                {n: 'زيارة أو بحث', w: 10}, {n: 'يوم كفالة', w: 10}, {n: 'يوم (جمعة/ثلاثاء/سبت)', w: 7},
-                {n: 'الاجتماع', w: 5}, {n: 'متابعة الأسر', w: 10}, {n: 'تسليم الفورم', w: 4},
-                {n: 'التاسكات', w: 8}, {n: 'الكرييتڤتي', w: 10}, {n: 'التعاون', w: 10}, {n: 'الجروب', w: 6}
+                {n: 'نزول زيارة أو بحث', w: 10}, {n: 'حضور يوم كفالة', w: 10}, {n: 'حضور يوم (جمعة/ثلاثاء/سبت)', w: 7},
+                {n: 'حضور الاجتماع', w: 5}, {n: 'متابعة الأسر', w: 10}, {n: ' تسليم الفورم في وقته', w: 4},
+                {n: 'تسليم التاسكات فى ميعادها', w: 8}, {n: 'الكرييتڤتي', w: 10}, {n: 'التعاون والمبادرة و مساندة الفريق', w: 10}, {n: 'التفاعل على الجروب', w: 6}
             ];
             base.forEach(c => html += `<div><label>${c.n}</label><input type="number" class="sc-in" data-max="${c.w}" value="0"></div>`);
             this.data.crit.forEach(c => {
@@ -275,26 +269,84 @@
         },
 
         async generateReport() {
-            const vId = document.getElementById('eval-vol-select').value;
-            const vol = this.data.vols.find(v => v.id == vId);
-            let score = 0, max = 0;
-            document.querySelectorAll('.sc-in').forEach(i => { score += parseFloat(i.value)||0; max += parseFloat(i.dataset.max); });
-            if(document.getElementById('eval-idea').value) await db.from('ideas').insert([{ name: vol.name, text: document.getElementById('eval-idea').value, status: 'pending' }]);
-            
-            document.getElementById('report-output').innerHTML = `
-                <div id="pdf-area" style="padding:20px; border:2px solid var(--secondary); border-radius:10px">
-                    <h2 style="text-align:center">تقرير أداء زادي 🌿</h2>
-                    <p><b>الاسم:</b> ${vol.name} | <b>النسبة:</b> ${((score/max)*100).toFixed(1)}%</p>
-                    <p><b>القوة:</b> ${document.getElementById('eval-strength').value}</p>
-                    <p><b>الخطة:</b> ${document.getElementById('eval-plan').value}</p>
-                    <p><b>رسالة:</b> ${document.getElementById('eval-motivation').value}</p>
-                </div>
-                <button class="btn btn-primary" style="width:100%; margin-top:10px" onclick="app.printPDF()">💾 تحميل PDF</button>`;
-            document.getElementById('report-output').style.display = 'block';
-            this.init();
-        },
+    const vId = document.getElementById('eval-vol-select').value;
+    const vol = this.data.vols.find(v => v.id == vId);
+    if(!vol) return alert("من فضلك اختاري زادي أولاً");
 
-        printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
+    let score = 0, max = 0;
+    let strengths = [], weaknesses = [];
+
+    // تحليل الدرجات
+    document.querySelectorAll('.sc-in').forEach(input => {
+        let val = parseFloat(input.value) || 0;
+        let m = parseFloat(input.dataset.max);
+        let label = input.previousElementSibling.innerText;
+        score += val; max += m;
+        if (val >= m * 0.8) strengths.push(label);
+        else if (val < m * 0.6) weaknesses.push(label);
+    });
+
+    const pct = ((score/max)*100).toFixed(1);
+
+    // --- محرك النصوص "غير المكررة" ---
+    const plans = [
+        `من الضروري تكثيف الجهود في (${weaknesses.join(' و ')}) لضمان توازن الأداء في الفترة القادمة.`,
+        `نقترح خطة تدريبية مركزة على (${weaknesses.join(' و ')}) لرفع الكفاءة العامة للزادي.`,
+        `نوصي بالتركيز على تحسين معدلات الالتزام في (${weaknesses.join(' و ')}) بالتعاون مع مسؤول الملف.`
+    ];
+
+    const motivations = {
+        high: [`أنتِ فخر لزاد يا ${vol.name}، عطاؤكِ المستمر هو المحرك الأساسي لنجاحنا!`, `نموذج مشرف للزادي الشغوف، استمري في إبهارنا بطاقتكِ.`],
+        mid: [`أداء ثابت ومستقر، وبقليل من التركيز على نقاط التحسين ستصلين للامتياز قريباً.`, `مجهود مشكور جداً، ننتظر منكِ انطلاقة أقوى في الشهر القادم.`],
+        low: [`البداية تحتاج صبراً، ونحن نثق أنكِ تمتلكين الإرادة لتجاوز التحديات والتميز.`, `ركزي على خطة التطوير وسنرى منكِ نسخة أقوى بإذن الله.`]
+    };
+
+    const randomPlan = weaknesses.length > 0 ? plans[Math.floor(Math.random() * plans.length)] : "أداء مثالي؛ نوصي ببدء التجهيز لمهام قيادية.";
+    let status = pct >= 90 ? 'high' : (pct >= 70 ? 'mid' : 'low');
+    const randomMotiv = motivations[status][Math.floor(Math.random() * motivations[status].length)];
+
+    // حفظ الفكرة لو موجودة
+    const ideaText = document.getElementById('eval-idea').value;
+    if(ideaText) await db.from('ideas').insert([{ name: vol.name, text: ideaText, status: 'pending' }]);
+
+    // بناء التقرير وعرضه
+    document.getElementById('report-output').innerHTML = `
+        <div id="pdf-area" style="padding:40px; border: 4px solid var(--secondary); border-radius:15px; background:#fff; direction:rtl;">
+            <div style="text-align:center; margin-bottom:20px">
+                <h1 style="color:var(--secondary); margin:0">بطاقة أداء زادي 🌿</h1>
+                <p style="color:var(--primary)">تقارير متطوعين مشروع زاد - ${new Date().toLocaleDateString('ar-EG')}</p>
+            </div>
+            <div style="font-size:18px; line-height:1.8">
+                <b>الزادي:</b> ${vol.name} <br>
+                <b>التقييم العام:</b> <span style="color:var(--primary); font-weight:bold; font-size:22px">${pct}%</span>
+            </div>
+            <hr style="margin:20px 0; border:0.5px solid #eee">
+            <p style="color:var(--secondary)"><b>🌟 نقاط التميز:</b> ${strengths.length > 0 ? strengths.join(' - ') : 'قيد الرصد'}</p>
+            <p style="color:var(--danger)"><b>⚠️ مجالات التطوير:</b> ${weaknesses.length > 0 ? weaknesses.join(' - ') : 'لا يوجد ملاحظات'}</p>
+            <div style="background:#f0fdf4; padding:15px; border-right:6px solid var(--primary); margin:20px 0">
+                <b>📈 الرؤية التطويرية:</b><br> ${randomPlan}
+            </div>
+            <div style="text-align:center; margin-top:30px; font-style:italic; font-size:18px; color:var(--secondary)">
+                "${randomMotiv}"
+            </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 حفظ وتحميل التقرير PDF</button>
+    `;
+    document.getElementById('report-output').style.display = 'block';
+    window.scrollTo(0, document.getElementById('report-output').offsetTop);
+},
+
+printPDF() {
+    const element = document.getElementById('pdf-area');
+    const opt = {
+        margin: 0.5,
+        filename: 'ZAD_Report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
 
         renderVols() {
             document.getElementById('vols-table-container').innerHTML = `<table><thead><tr><th>الاسم</th><th>الفريز</th><th>إجراءات</th></tr></thead><tbody>` + 
