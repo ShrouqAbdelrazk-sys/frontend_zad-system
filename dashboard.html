@@ -348,37 +348,67 @@ printPDF() {
     html2pdf().set(opt).from(element).save();
 }
 
-        renderVols() {
-            document.getElementById('vols-table-container').innerHTML = `<table><thead><tr><th>الاسم</th><th>الفريز</th><th>إجراءات</th></tr></thead><tbody>` + 
-                this.data.vols.map(v => `<tr><td>${v.name}</td><td>${v.freeze_count||0}/2</td><td>
-                <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button>
-                <button class="btn btn-danger" onclick="app.deleteItem('volunteers', '${v.id}')">🗑️</button></td></tr>`).join('') + `</tbody></table>`;
+                renderVols() {
+            let html = `<table><thead><tr><th>الاسم</th><th>الفريز</th><th>الدور</th><th>إجراءات</th></tr></thead><tbody>`;
+            this.data.vols.forEach(v => {
+                html += `<tr>
+                    <td><b>${v.name}</b></td>
+                    <td>${v.freeze_count || 0}/2</td>
+                    <td>${v.role === 'lead' ? '⭐ مسؤول' : 'متطوع'}</td>
+                    <td>
+                        <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button>
+                        <button class="btn btn-danger" onclick="app.deleteItem('volunteers', '${v.id}')">🗑️</button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('vols-table-container').innerHTML = html + `</tbody></table>`;
         },
 
         renderCrit() {
-            document.getElementById('crit-table-container').innerHTML = `<table><thead><tr><th>المعيار</th><th>الفئة</th><th>إجراءات</th></tr></thead><tbody>` + 
-                this.data.crit.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>
-                <button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button>
-                <button class="btn btn-danger" onclick="app.deleteItem('criteria', '${c.id}')">🗑️</button></td></tr>`).join('') + `</tbody></table>`;
+            let html = `<table><thead><tr><th>المعيار</th><th>الوزن</th><th>إجراءات</th></tr></thead><tbody>`;
+            this.data.crit.forEach(c => {
+                html += `<tr>
+                    <td>${c.name}</td>
+                    <td>${c.weight}</td>
+                    <td><button class="btn btn-danger" onclick="app.deleteItem('criteria', '${c.id}')">🗑️</button></td>
+                </tr>`;
+            });
+            document.getElementById('crit-table-container').innerHTML = html + `</tbody></table>`;
         },
 
         renderIdeas() {
-            document.getElementById('ideas-container').innerHTML = this.data.ideas.map(i => `
-                <div class="idea-card">
-                    <div><b>${i.name}:</b> ${i.text} <span class="status-badge" style="background:${i.status==='done'?'#dcfce7':'#fef3c7'}">${i.status==='done'?'نفذت':'انتظار'}</span></div>
-                    <div>
-                        <button class="btn btn-success btn-small" onclick="app.updateIdea('${i.id}', 'done')">✅</button>
-                        <button class="btn btn-danger btn-small" onclick="app.deleteItem('ideas', '${i.id}')">🗑️</button>
-                    </div>
-                </div>`).join('');
+            let html = '';
+            this.data.ideas.forEach(i => {
+                html += `<div class="idea-card">
+                    <div><b>${i.name}:</b> ${i.text}</div>
+                    <span class="status-badge" style="background:#fef3c7; color:#92400e">قيد الدراسة</span>
+                </div>`;
+            });
+            document.getElementById('ideas-container').innerHTML = html || 'لا توجد أفكار مقترحة بعد.';
         },
 
-        async updateIdea(id, s) { await db.from('ideas').update({status: s}).eq('id', id); this.init(); },
-        async deleteItem(t, id) { if(confirm('متأكد؟')) { await db.from(t).delete().eq('id', id); this.init(); } },
-        updateStats() { document.getElementById('st-vols').innerText = this.data.vols.length; document.getElementById('st-ideas').innerText = this.data.ideas.length; },
-        populateVolSelect() { document.getElementById('eval-vol-select').innerHTML = '<option value="">-- اختر --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join(''); }
+        async deleteItem(table, id) {
+            if(!confirm("هل أنت متأكد من الحذف؟")) return;
+            await db.from(table).delete().eq('id', id);
+            this.init();
+        },
+
+        updateStats() {
+            document.getElementById('st-vols').innerText = this.data.vols.length;
+            document.getElementById('st-freeze').innerText = this.data.vols.filter(v => v.freeze === 'yes').length;
+            document.getElementById('st-ideas').innerText = this.data.ideas.length;
+        },
+
+        populateVolSelect() {
+            const sel = document.getElementById('eval-vol-select');
+            sel.innerHTML = '<option value="">-- اختر متطوعاً للتقييم --</option>' + 
+                this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+        }
     };
+
+    // تشغيل التطبيق
     app.init();
 </script>
 </body>
 </html>
+
