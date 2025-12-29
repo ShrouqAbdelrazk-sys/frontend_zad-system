@@ -42,6 +42,7 @@
 
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
         .bg-fixed { background: #dcfce7; color: #166534; }
+        .bg-var { background: #fef9c3; color: #854d0e; }
         .bg-bonus { background: #dbeafe; color: #1e40af; }
 
         .page-section { display: none; }
@@ -58,13 +59,13 @@
     <div class="nav-item active" onclick="app.showPage('dash', this)">📊 الرئيسية</div>
     <div class="nav-item" onclick="app.showPage('vols', this)">👥 متطوعين زاد</div>
     <div class="nav-item" onclick="app.showPage('eval', this)">📝 التقييم والتقارير</div>
-    <div class="nav-item" onclick="app.showPage('crit', this)">⚙️ معايير التقييم</div>
+    <div class="nav-item" onclick="app.showPage('crit', this)">⚙️  معايير التقييم</div>
     <div class="nav-item" onclick="app.showPage('vault', this)">💡 بنك الأفكار</div>
 </div>
 
 <div class="main">
     <div id="page-dash" class="page-section active">
-        <div class="header"><h1> مرحباً بعودتك.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع</button></div>
+        <div class="header"><h1> مرحباً بعودتك صديقي.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button></div>
         <div class="box">
             <h3>📈 إحصائيات سريعة</h3>
             <div style="display:flex; gap:20px; margin-top:15px">
@@ -81,7 +82,7 @@
 
     <div id="page-vols" class="page-section">
         <div class="header"><h1>إدارة المتطوعين</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">إضافة جديد</button></div>
-        <div class="box"><div id="vols-table-container">جاري جلب البيانات...</div></div>
+        <div class="box"><div id="vols-table-container"></div></div>
     </div>
 
     <div id="page-eval" class="page-section">
@@ -89,6 +90,7 @@
         <div class="box">
             <label>اختر المتطوع للمراجعة:</label>
             <select id="eval-vol-select" onchange="app.loadEvalFields()"></select>
+            
             <div id="eval-form-body" style="display:none; margin-top:20px;">
                 <div id="vol-status-badge" style="margin-bottom:15px"></div>
                 <div id="dynamic-fields-container"></div>
@@ -113,14 +115,27 @@
 
 <div id="modal-vol" class="modal">
     <div class="modal-content">
-        <h3 id="modal-vol-title">بيانات المتطوع</h3><br>
+        <h3 id="modal-vol-title">إضافة متطوع</h3><br>
         <input type="hidden" id="v-id">
-        <div class="grid-form"><input type="text" id="v-name" placeholder="الاسم"><input type="tel" id="v-phone" placeholder="الهاتف"></div>
-        <div class="grid-form"><input type="date" id="v-dob" onchange="app.calcAge()"><input type="text" id="v-age" placeholder="العمر" readonly></div>
-        <div class="grid-form"><input type="date" id="v-join" title="تاريخ الانضمام">
-            <select id="v-role"><option value="field">متطوع ميداني</option><option value="lead">مسئول ملف</option></select>
+        <div class="grid-form">
+            <input type="text" id="v-name" placeholder="الاسم">
+            <input type="tel" id="v-phone" placeholder="الهاتف">
         </div>
-        <select id="v-freeze" style="margin-bottom:15px"><option value="no">حالة نشطة ✅</option><option value="yes">حالة فريز ❄️</option></select>
+        <div class="grid-form">
+            <input type="date" id="v-dob" onchange="app.calcAge()">
+            <input type="text" id="v-age" placeholder="العمر" readonly>
+        </div>
+        <div class="grid-form">
+            <input type="date" id="v-join" title="تاريخ الانضمام">
+            <select id="v-role">
+                <option value="field">متطوع ميداني</option>
+                <option value="lead">مسئول ملف</option>
+            </select>
+        </div>
+        <select id="v-freeze" style="margin-bottom:15px">
+            <option value="no">حالة نشطة ✅</option>
+            <option value="yes">حالة فريز ❄️</option>
+        </select>
         <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">حفظ البيانات</button>
         <button class="btn" style="width:100%; margin-top:5px" onclick="app.closeModal('modal-vol')">إلغاء</button>
     </div>
@@ -131,8 +146,15 @@
         <h3 id="modal-crit-title">تعريف معيار جديد</h3><br>
         <input type="hidden" id="c-id"> <input type="text" id="c-name" placeholder="اسم المعيار">
         <div class="grid-form" style="margin-top:10px">
-            <select id="c-type"><option value="fixed">ثابت</option><option value="variable">متغير</option><option value="bonus">+بونص</option></select>
-            <select id="c-target"><option value="all">للجميع</option><option value="lead">للمسئولين فقط</option></select>
+            <select id="c-type">
+                <option value="fixed">ثابت</option>
+                <option value="variable">متغير</option>
+                <option value="bonus">+بونص</option>
+            </select>
+            <select id="c-target">
+                <option value="all">للجميع</option>
+                <option value="lead">للمسئولين فقط</option>
+            </select>
         </div>
         <input type="number" id="c-weight" placeholder="الدرجة القصوى" style="margin-top:10px">
         <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.saveCrit()">تثبيت</button>
@@ -156,7 +178,7 @@ const app = {
             this.data.crit = c || [];
             this.data.ideas = JSON.parse(localStorage.getItem('z_ideas_v3')) || [];
             this.renderAll();
-        } catch(e) { console.error("Error loading data:", e); }
+        } catch(e) { console.error(e); }
     },
     showPage(id, el) {
         document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
@@ -169,12 +191,13 @@ const app = {
             const v = editId ? this.data.vols.find(x => x.id == editId) : null;
             document.getElementById('v-id').value = v ? v.id : '';
             document.getElementById('v-name').value = v ? v.name : '';
-            document.getElementById('v-role').value = v ? v.role : 'field';
             document.getElementById('v-phone').value = v ? (v.phone || '') : '';
             document.getElementById('v-dob').value = v ? (v.dob || '') : '';
             document.getElementById('v-age').value = v ? (v.age || '') : '';
             document.getElementById('v-join').value = v ? (v.join || '') : '';
+            document.getElementById('v-role').value = v ? v.role : 'field';
             document.getElementById('v-freeze').value = v ? (v.freeze || 'no') : 'no';
+            document.getElementById('modal-vol-title').innerText = v ? "تعديل بيانات المتطوع" : "إضافة متطوع جديد";
         }
         if(id === 'modal-crit') {
             const c = editId ? this.data.crit.find(x => x.id == editId) : null;
@@ -195,12 +218,12 @@ const app = {
         const id = document.getElementById('v-id').value;
         const vol = { 
             name: document.getElementById('v-name').value, 
+            phone: document.getElementById('v-phone').value,
+            dob: document.getElementById('v-dob').value,
             role: document.getElementById('v-role').value, 
             age: document.getElementById('v-age').value, 
             freeze: document.getElementById('v-freeze').value, 
-            join: document.getElementById('v-join').value,
-            phone: document.getElementById('v-phone').value,
-            dob: document.getElementById('v-dob').value
+            join: document.getElementById('v-join').value 
         };
         if(id) await supabase.from('volunteers').update(vol).eq('id', id);
         else await supabase.from('volunteers').insert([vol]);
@@ -211,12 +234,7 @@ const app = {
     },
     async saveCrit() {
         const id = document.getElementById('c-id').value;
-        const critObj = { 
-            name: document.getElementById('c-name').value, 
-            type: document.getElementById('c-type').value, 
-            target: document.getElementById('c-target').value, 
-            weight: parseInt(document.getElementById('c-weight').value) 
-        };
+        const critObj = { name: document.getElementById('c-name').value, type: document.getElementById('c-type').value, target: document.getElementById('c-target').value, weight: parseInt(document.getElementById('c-weight').value) };
         if(id) await supabase.from('criteria').update(critObj).eq('id', id);
         else await supabase.from('criteria').insert([critObj]);
         await this.loadData(); this.closeModal('modal-crit');
@@ -261,21 +279,11 @@ const app = {
     printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('Report.pdf'); },
     renderAll() {
         let vHtml = `<table><tr><th>الاسم</th><th>الدور</th><th>إجراء</th></tr>`;
-        this.data.vols.forEach(v => { 
-            vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'👑':'👤'}</td><td>
-                <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button>
-                <button class="btn btn-danger" onclick="app.deleteVol('${v.id}')">🗑️</button>
-            </td></tr>`; 
-        });
+        this.data.vols.forEach(v => { vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'👑':'👤'}</td><td><button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button><button class="btn btn-danger" onclick="app.deleteVol('${v.id}')">🗑️</button></td></tr>`; });
         document.getElementById('vols-table-container').innerHTML = vHtml + `</table>`;
         
         let cHtml = `<table><tr><th>المعيار</th><th>الدرجة</th><th>إجراء</th></tr>`;
-        this.data.crit.forEach(c => { 
-            cHtml += `<tr><td>${c.name}</td><td>${c.weight}</td><td>
-                <button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button>
-                <button class="btn btn-danger" onclick="app.deleteCrit('${c.id}')">🗑️</button>
-            </td></tr>`; 
-        });
+        this.data.crit.forEach(c => { cHtml += `<tr><td>${c.name}</td><td>${c.weight}</td><td><button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button><button class="btn btn-danger" onclick="app.deleteCrit('${c.id}')">🗑️</button></td></tr>`; });
         document.getElementById('crit-table-container').innerHTML = cHtml + `</table>`;
 
         document.getElementById('st-vols').innerText = this.data.vols.length;
