@@ -65,7 +65,7 @@
 
 <div class="sidebar">
     <div class="logo">ZAD Altimate</div>
-    <div class="nav-item active" onclick="app.showPage('dash')">📊 ملخص زاد</div>
+    <div class="nav-item active" onclick="app.showPage('dash', this)">📊 ملخص زاد</div>
     <div class="nav-item" onclick="app.showPage('vols')">👥 الزاديون</div>
     <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقارير</div>
     <div class="nav-item" onclick="app.showPage('crit')">⚙️ معايير التقييم</div>
@@ -190,11 +190,12 @@
             this.renderVols(); this.renderCrit(); this.renderIdeas(); this.updateStats(); this.populateVolSelect();
         },
 
-        showPage(id) {
-            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
-            document.getElementById('page-'+id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            event.currentTarget.classList.add('active');
+        showPage(id, el) {
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
         },
 
         openModal(mid, id = null) {
@@ -346,7 +347,7 @@ printPDF() {
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save();
-}
+},
 
                 renderVols() {
             let html = `<table><thead><tr><th>الاسم</th><th>الفريز</th><th>الدور</th><th>إجراءات</th></tr></thead><tbody>`;
