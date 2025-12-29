@@ -11,7 +11,7 @@
     <style>
         :root {
             --primary: #10b981; 
-            --secondary: #064e3b; /* الأخضر الملكي المميز */
+            --secondary: #064e3b; 
             --bg: #f8fafc;
             --white: #ffffff;
             --danger: #ef4444;
@@ -40,7 +40,7 @@
         label { display: block; margin-bottom: 5px; font-weight: 700; color: var(--secondary); font-size: 14px; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background: #fff; }
 
-        .btn { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-danger { background: #fee2e2; color: var(--danger); font-size: 12px; }
         .btn-edit { background: #e0f2fe; color: #0369a1; font-size: 12px; }
@@ -73,7 +73,6 @@
 </div>
 
 <div class="main">
-    
     <div id="page-dash" class="page-section active">
         <div class="header">
             <h1 class="page-title">لوحة القيادة</h1>
@@ -86,7 +85,7 @@
         </div>
         <div class="box">
             <h3>📌 آخر الملاحظات</h3>
-            <div id="praise-wall" style="margin-top:15px; line-height: 1.8;"></div>
+            <div id="praise-wall" style="margin-top:15px; line-height: 1.8;">لا توجد ملاحظات حالياً.</div>
         </div>
     </div>
 
@@ -145,7 +144,7 @@
             <select id="v-role">
                 <option value="field">متطوع ميداني</option>
                 <option value="lead">مسئول ملف</option>
-                <option value="field">متطوع إداري</option>
+                <option value="admin">متطوع إداري</option>
             </select>
         </div>
         <div class="grid-form">
@@ -153,7 +152,7 @@
                 <option value="no">نشط ✅</option>
                 <option value="yes">فريز ❄️</option>
             </select>
-            <input type="number" id="v-freeze-count" placeholder="مرات الفريز السابقة" value="0" readonly>
+            <input type="number" id="v-freeze-count" placeholder="مرات الفريز" value="0" readonly>
         </div>
         <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">حفظ البيانات</button>
         <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-vol')">إغلاق</button>
@@ -162,16 +161,16 @@
 
 <div id="modal-crit" class="modal">
     <div class="modal-content">
-        <h3>إضافة معيار جديد</h3><br>
+        <h3>إعداد المعيار</h3><br>
         <input type="hidden" id="c-id">
         <input type="text" id="c-name" placeholder="اسم المعيار">
         <div class="grid-form" style="margin-top:10px">
             <select id="c-type">
-                <option value="fixed">مشاركة ثابتة (إجباري على الجميع)</option>
-                <option value="bonus">بونص (إضافي)</option>
-                <option value="lead">مسئولية (للمسئولين فقط)</option>
+                <option value="fixed">مشاركة ثابتة</option>
+                <option value="bonus">بونص</option>
+                <option value="lead">مسئولية</option>
             </select>
-            <input type="number" id="c-weight" placeholder="الدرجة القصوى">
+            <input type="number" id="c-weight" placeholder="الدرجة">
         </div>
         <button class="btn btn-primary" style="width:100%; margin-top:10px" onclick="app.saveCrit()">حفظ المعيار</button>
         <button class="btn" style="width:100%; margin-top:10px" onclick="app.closeModal('modal-crit')">إلغاء</button>
@@ -204,84 +203,73 @@
             event.currentTarget.classList.add('active');
         },
 
-        openModal(id, editId = null, type = 'vol') {
-            document.getElementById(id).style.display = 'flex';
-            if(type === 'vol' && editId) {
-                const v = this.data.vols.find(x => x.id == editId);
-                document.getElementById('v-id').value = v.id;
-                document.getElementById('v-name').value = v.name;
-                document.getElementById('v-phone').value = v.phone;
-                document.getElementById('v-freeze').value = v.freeze;
-                document.getElementById('v-freeze-count').value = v.freeze_count || 0;
+        openModal(mid, id = null) {
+            document.getElementById(mid).style.display = 'flex';
+            if(id) {
+                if(mid === 'modal-vol') {
+                    const v = this.data.vols.find(x => x.id == id);
+                    document.getElementById('v-id').value = v.id;
+                    document.getElementById('v-name').value = v.name;
+                    document.getElementById('v-phone').value = v.phone;
+                    document.getElementById('v-freeze-count').value = v.freeze_count || 0;
+                } else {
+                    const c = this.data.crit.find(x => x.id == id);
+                    document.getElementById('c-id').value = c.id;
+                    document.getElementById('c-name').value = c.name;
+                    document.getElementById('c-type').value = c.type;
+                    document.getElementById('c-weight').value = c.weight;
+                }
             }
         },
-        closeModal(id) { document.getElementById(id).style.display = 'none'; },
+        closeModal(mid) { document.getElementById(mid).style.display = 'none'; document.querySelectorAll('input').forEach(i => i.value=''); },
 
         async saveVol() {
             const id = document.getElementById('v-id').value;
             const freezeVal = document.getElementById('v-freeze').value;
-            let currentCount = parseInt(document.getElementById('v-freeze-count').value) || 0;
+            let currentCount = id ? (this.data.vols.find(x => x.id == id).freeze_count || 0) : 0;
 
-            if(freezeVal === 'yes' && currentCount >= 2 && !id) {
-                return alert('⚠️ لا يمكن تفعيل الفريز، تم استنفاد المرات السنوية (2/2)');
-            }
+            if(freezeVal === 'yes' && currentCount >= 2) return alert('⚠️ استنفذ الزادي مرات الفريز السنوية!');
 
-            const vol = {
+            const payload = {
                 name: document.getElementById('v-name').value,
                 phone: document.getElementById('v-phone').value,
-                join: document.getElementById('v-join').value,
                 role: document.getElementById('v-role').value,
                 freeze: freezeVal,
                 freeze_count: freezeVal === 'yes' ? currentCount + 1 : currentCount
             };
 
-            if(id) await db.from('volunteers').update(vol).eq('id', id);
-            else await db.from('volunteers').insert([vol]);
-            
-            await this.init(); this.closeModal('modal-vol');
+            if(id) await db.from('volunteers').update(payload).eq('id', id);
+            else await db.from('volunteers').insert([payload]);
+            this.init(); this.closeModal('modal-vol');
         },
 
-        async deleteVol(id) { if(confirm('حذف المتطوع نهائياً؟')) { await db.from('volunteers').delete().eq('id', id); this.init(); } },
-
         async saveCrit() {
-            const crit = {
+            const id = document.getElementById('c-id').value;
+            const payload = {
                 name: document.getElementById('c-name').value,
                 type: document.getElementById('c-type').value,
                 weight: parseInt(document.getElementById('c-weight').value)
             };
-            await db.from('criteria').insert([crit]);
-            await this.init(); this.closeModal('modal-crit');
-        },
-
-        async deleteCrit(id) { await db.from('criteria').delete().eq('id', id); this.init(); },
-
-        populateVolSelect() {
-            const sel = document.getElementById('eval-vol-select');
-            sel.innerHTML = '<option value="">-- اختر --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+            if(id) await db.from('criteria').update(payload).eq('id', id);
+            else await db.from('criteria').insert([payload]);
+            this.init(); this.closeModal('modal-crit');
         },
 
         loadEvalFields() {
             const vId = document.getElementById('eval-vol-select').value;
             if(!vId) return;
             const vol = this.data.vols.find(v => v.id == vId);
-            let html = '<h4 style="margin-bottom:10px; color:var(--primary)">📋 بنود التقييم:</h4><div class="grid-form">';
-            
-            // إضافة المعايير الأساسية اللي طلبتيها يدوياً لو مش موجودة
-            const baseCrit = [
-                {name: 'زيارة أو بحث', weight: 10}, {name: 'حضور يوم كفالة', weight: 10}, {name: 'حضور يوم (جمعة/ثلاثاء/سبت)', weight: 7},
-                {name: 'حضور الاجتماع', weight: 5}, {name: 'متابعة الأسر', weight: 10}, {name: 'تسليم الفورم فى ميعاده', weight: 4}, {name: 'تسليم التاسكات ف وقتها', weight: 8}, {name: 'الكرييتڤتي', weight: 10}, 
-                {name: 'التعاون ومساندة الفريق', weight: 10}, {name: 'حضور الإيڤينتات', weight: 5}, {name: 'التفاعل على الجروب', weight: 6}
+            let html = '<div class="grid-form">';
+            const base = [
+                {n: 'زيارة أو بحث', w: 10}, {n: 'يوم كفالة', w: 10}, {n: 'يوم (جمعة/ثلاثاء/سبت)', w: 7},
+                {n: 'الاجتماع', w: 5}, {n: 'متابعة الأسر', w: 10}, {n: 'تسليم الفورم', w: 4},
+                {n: 'التاسكات', w: 8}, {n: 'الكرييتڤتي', w: 10}, {n: 'التعاون', w: 10}, {n: 'الجروب', w: 6}
             ];
-
-            baseCrit.forEach(c => {
-                html += `<div><label>${c.name}</label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
-            });
-
+            base.forEach(c => html += `<div><label>${c.n}</label><input type="number" class="sc-in" data-max="${c.w}" value="0"></div>`);
             this.data.crit.forEach(c => {
                 if(c.type === 'lead' && vol.role !== 'lead') return;
-                html += `<div><label>${c.name} (${c.type})</label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
+                html += `<div><label>${c.name}</label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
             });
-
             document.getElementById('dynamic-fields-container').innerHTML = html + '</div>';
             document.getElementById('eval-form-body').style.display = 'block';
         },
@@ -291,68 +279,54 @@
             const vol = this.data.vols.find(v => v.id == vId);
             let score = 0, max = 0;
             document.querySelectorAll('.sc-in').forEach(i => { score += parseFloat(i.value)||0; max += parseFloat(i.dataset.max); });
+            if(document.getElementById('eval-idea').value) await db.from('ideas').insert([{ name: vol.name, text: document.getElementById('eval-idea').value, status: 'pending' }]);
             
-            const pct = ((score/max)*100).toFixed(1);
-            const idea = document.getElementById('eval-idea').value;
-            if(idea) await db.from('ideas').insert([{ name: vol.name, text: idea, status: 'pending' }]);
-
             document.getElementById('report-output').innerHTML = `
-                <div id="pdf-area" style="padding:30px; border: 2px solid var(--secondary); border-radius:15px">
-                    <h2 style="text-align:center; color:var(--secondary)">تقرير أداء متطوع زاد 🌿</h2>
-                    <hr style="margin:15px 0">
-                    <p><b>المتطوع:</b> ${vol.name} | <b>النسبة:</b> <span style="font-size:20px; color:var(--primary)">${pct}%</span></p>
-                    <div style="margin-top:20px">
-                        <p><b>💪 نقاط القوة:</b> ${document.getElementById('eval-strength').value}</p>
-                        <p><b>⚠️ نقاط الضعف:</b> ${document.getElementById('eval-weakness').value}</p>
-                        <p style="background:#f0fdf4; padding:10px; border-radius:8px"><b>📈 خطة التطوير:</b> ${document.getElementById('eval-plan').value}</p>
-                        <p><b>🌟 رسالة تحفيزية:</b> <i>${document.getElementById('eval-motivation').value}</i></p>
-                        <p><b>🗣️ تعليق الإدارة:</b> ${document.getElementById('eval-personal-note').value}</p>
-                    </div>
+                <div id="pdf-area" style="padding:20px; border:2px solid var(--secondary); border-radius:10px">
+                    <h2 style="text-align:center">تقرير أداء زادي 🌿</h2>
+                    <p><b>الاسم:</b> ${vol.name} | <b>النسبة:</b> ${((score/max)*100).toFixed(1)}%</p>
+                    <p><b>القوة:</b> ${document.getElementById('eval-strength').value}</p>
+                    <p><b>الخطة:</b> ${document.getElementById('eval-plan').value}</p>
+                    <p><b>رسالة:</b> ${document.getElementById('eval-motivation').value}</p>
                 </div>
-                <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 تحميل التقرير الاحترافي PDF</button>
-            `;
+                <button class="btn btn-primary" style="width:100%; margin-top:10px" onclick="app.printPDF()">💾 تحميل PDF</button>`;
             document.getElementById('report-output').style.display = 'block';
             this.init();
         },
 
-        printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Pro_Report.pdf'); },
-
-        async updateIdeaStatus(id, status) { await db.from('ideas').update({ status: status }).eq('id', id); this.init(); },
-        async deleteIdea(id) { await db.from('ideas').delete().eq('id', id); this.init(); },
+        printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
 
         renderVols() {
-            let h = `<table><thead><tr><th>الاسم</th><th>الدور</th><th>الفريز</th><th>إجراءات</th></tr></thead><tbody>`;
-            this.data.vols.forEach(v => {
-                h += `<tr><td><b>${v.name}</b></td><td>${v.role}</td><td>${v.freeze_count}/2</td>
-                <td>
-                    <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}', 'vol')">✏️تعديل</button>
-                    <button class="btn btn-danger" onclick="app.deleteVol('${v.id}')">🗑️حذف</button>
-                </td></tr>`;
-            });
-            document.getElementById('vols-table-container').innerHTML = h + `</tbody></table>`;
+            document.getElementById('vols-table-container').innerHTML = `<table><thead><tr><th>الاسم</th><th>الفريز</th><th>إجراءات</th></tr></thead><tbody>` + 
+                this.data.vols.map(v => `<tr><td>${v.name}</td><td>${v.freeze_count||0}/2</td><td>
+                <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button>
+                <button class="btn btn-danger" onclick="app.deleteItem('volunteers', '${v.id}')">🗑️</button></td></tr>`).join('') + `</tbody></table>`;
         },
 
         renderCrit() {
-            let h = `<table><thead><tr><th>المعيار</th><th>الفئة</th><th>الوزن</th><th>إجراء</th></tr></thead><tbody>`;
-            this.data.crit.forEach(c => {
-                h += `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.weight}</td>
-                <td>
-                
-                <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${c.id}', 'vol')">✏️تعديل</button>
-                <button class="btn btn-danger" onclick="app.deleteCrit('${c.id}')">🗑️حذف</button></td></tr>`;
-            });
-            document.getElementById('crit-table-container').innerHTML = h + `</tbody></table>`;
+            document.getElementById('crit-table-container').innerHTML = `<table><thead><tr><th>المعيار</th><th>الفئة</th><th>إجراءات</th></tr></thead><tbody>` + 
+                this.data.crit.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>
+                <button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button>
+                <button class="btn btn-danger" onclick="app.deleteItem('criteria', '${c.id}')">🗑️</button></td></tr>`).join('') + `</tbody></table>`;
         },
 
         renderIdeas() {
             document.getElementById('ideas-container').innerHTML = this.data.ideas.map(i => `
                 <div class="idea-card">
+                    <div><b>${i.name}:</b> ${i.text} <span class="status-badge" style="background:${i.status==='done'?'#dcfce7':'#fef3c7'}">${i.status==='done'?'نفذت':'انتظار'}</span></div>
                     <div>
-                        <b>${i.name}:</b> ${i.text} 
-                        <span class="status-badge" style="background:${i.status==='done'?'#dcfce7':'#fef3c7'}">
-                            ${i.status==='done'?'تم التنفيذ ✅':'قيد الانتظار ⏳'}
-                        </span>
+                        <button class="btn btn-success btn-small" onclick="app.updateIdea('${i.id}', 'done')">✅</button>
+                        <button class="btn btn-danger btn-small" onclick="app.deleteItem('ideas', '${i.id}')">🗑️</button>
                     </div>
-                    <div style="display:flex; gap:5px">
-                        <button class="btn btn-success" onclick="app.updateIdeaStatus('${i.id}', 'done')">تم</button>
-                        <button class="btn btn-danger" onclick="app.deleteIdea('${i.i
+                </div>`).join('');
+        },
+
+        async updateIdea(id, s) { await db.from('ideas').update({status: s}).eq('id', id); this.init(); },
+        async deleteItem(t, id) { if(confirm('متأكد؟')) { await db.from(t).delete().eq('id', id); this.init(); } },
+        updateStats() { document.getElementById('st-vols').innerText = this.data.vols.length; document.getElementById('st-ideas').innerText = this.data.ideas.length; },
+        populateVolSelect() { document.getElementById('eval-vol-select').innerHTML = '<option value="">-- اختر --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join(''); }
+    };
+    app.init();
+</script>
+</body>
+</html>
