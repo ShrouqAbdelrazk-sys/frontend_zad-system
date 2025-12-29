@@ -6,8 +6,9 @@
     <title>ZAD Altimate | Pro Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <style>
         :root {
             --primary: #10b981; --royal-green: #064e3b; --bg: #f0fdf4;
@@ -33,8 +34,8 @@
         
         .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; font-size: 13px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-danger { background: #fee2e2; color: var(--danger); padding: 5px 10px; }
-        .btn-edit { background: #e0f2fe; color: #0369a1; padding: 5px 10px; margin-left: 5px; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-edit { background: #e0f2fe; color: #0369a1; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th { text-align: right; background: #f8fafc; padding: 15px; color: var(--royal-green); border-bottom: 2px solid var(--primary); }
@@ -54,18 +55,19 @@
 </head>
 <body>
 
+<!-- HTML Body remains the same -->
 <div class="sidebar">
     <div class="logo">ZAD Altimate</div>
-    <div class="nav-item active" onclick="app.showPage('dash', this)">📊 الرئيسية</div>
-    <div class="nav-item" onclick="app.showPage('vols', this)">👥 متطوعين زاد</div>
-    <div class="nav-item" onclick="app.showPage('eval', this)">📝 التقييم والتقارير</div>
-    <div class="nav-item" onclick="app.showPage('crit', this)">⚙️  معايير التقييم</div>
-    <div class="nav-item" onclick="app.showPage('vault', this)">💡 بنك الأفكار</div>
+    <div class="nav-item active" onclick="app.showPage('dash')">📊 الرئيسية</div>
+    <div class="nav-item" onclick="app.showPage('vols')">👥 المتطوعين</div>
+    <div class="nav-item" onclick="app.showPage('eval')">📝 التقييم والتقرير</div>
+    <div class="nav-item" onclick="app.showPage('crit')">⚙️ المعايير</div>
+    <div class="nav-item" onclick="app.showPage('vault')">💡 بنك الأفكار</div>
 </div>
 
 <div class="main">
     <div id="page-dash" class="page-section active">
-        <div class="header"><h1> مرحباً بعودتك صديقي.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button></div>
+        <div class="header"><h1>مرحباً بعودتك.. 🌿</h1> <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button></div>
         <div class="box">
             <h3>📈 إحصائيات سريعة</h3>
             <div style="display:flex; gap:20px; margin-top:15px">
@@ -115,152 +117,202 @@
 
 <div id="modal-vol" class="modal">
     <div class="modal-content">
-        <h3 id="modal-vol-title">إضافة متطوع</h3><br>
-        <input type="hidden" id="v-id">
-        <div class="grid-form">
-            <input type="text" id="v-name" placeholder="الاسم">
-            <input type="tel" id="v-phone" placeholder="الهاتف">
-        </div>
-        <div class="grid-form">
-            <input type="date" id="v-dob" onchange="app.calcAge()">
-            <input type="text" id="v-age" placeholder="العمر" readonly>
-        </div>
-        <div class="grid-form">
-            <input type="date" id="v-join" title="تاريخ الانضمام">
-            <select id="v-role">
-                <option value="field">متطوع ميداني</option>
-                <option value="lead">مسئول ملف</option>
+        <form id="form-vol">
+            <h3 id="modal-vol-title">إضافة متطوع</h3><br>
+            <input type="hidden" id="v-id">
+            <div class="grid-form">
+                <input type="text" id="v-name" placeholder="الاسم" required>
+                <input type="tel" id="v-phone" placeholder="الهاتف">
+            </div>
+            <div class="grid-form">
+                <input type="date" id="v-dob" onchange="app.calcAge()">
+                <input type="text" id="v-age" placeholder="العمر" readonly>
+            </div>
+            <div class="grid-form">
+                <input type="date" id="v-join" title="تاريخ الانضمام">
+                <select id="v-role">
+                    <option value="field">متطوع ميداني</option>
+                    <option value="lead">مسئول ملف</option>
+                </select>
+            </div>
+            <select id="v-freeze" style="margin-bottom:15px">
+                <option value="no">حالة نشطة ✅</option>
+                <option value="yes">حالة فريز ❄️</option>
             </select>
-        </div>
-        <select id="v-freeze" style="margin-bottom:15px">
-            <option value="no">حالة نشطة ✅</option>
-            <option value="yes">حالة فريز ❄️</option>
-        </select>
-        <button class="btn btn-primary" style="width:100%" onclick="app.saveVol()">حفظ البيانات</button>
+            <button type="submit" class="btn btn-primary" style="width:100%">حفظ البيانات</button>
+        </form>
         <button class="btn" style="width:100%; margin-top:5px" onclick="app.closeModal('modal-vol')">إلغاء</button>
     </div>
 </div>
 
 <div id="modal-crit" class="modal">
     <div class="modal-content">
-        <h3 id="modal-crit-title">تعريف معيار جديد</h3><br>
-        <input type="hidden" id="c-id"> <input type="text" id="c-name" placeholder="اسم المعيار">
-        <div class="grid-form" style="margin-top:10px">
-            <select id="c-type">
-                <option value="fixed">ثابت</option>
-                <option value="variable">متغير</option>
-                <option value="bonus">+بونص</option>
-            </select>
-            <select id="c-target">
-                <option value="all">للجميع</option>
-                <option value="lead">للمسئولين فقط</option>
-            </select>
-        </div>
-        <input type="number" id="c-weight" placeholder="الدرجة القصوى" style="margin-top:10px">
-        <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.saveCrit()">تثبيت</button>
+        <form id="form-crit">
+            <h3>تعريف معيار جديد</h3><br>
+            <input type="text" id="c-name" placeholder="اسم المعيار" required>
+            <div class="grid-form" style="margin-top:10px">
+                <select id="c-type">
+                    <option value="fixed">ثابت</option>
+                    <option value="variable">متغير</option>
+                    <option value="bonus">بونص</option>
+                </select>
+                <select id="c-target">
+                    <option value="all">للجميع</option>
+                    <option value="lead">للمسئولين فقط</option>
+                </select>
+            </div>
+            <input type="number" id="c-weight" placeholder="الدرجة القصوى" style="margin-top:10px" required>
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px">تثبيت</button>
+        </form>
         <button class="btn" style="width:100%; margin-top:5px" onclick="app.closeModal('modal-crit')">إلغاء</button>
     </div>
 </div>
 
+
 <script>
-const SB_URL = 'https://dansnpkegnrntnxwadbd.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhbnNucGtlZ25ybnRueHdhZGJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2ODg3ODIsImV4cCI6MjA4MjI2NDc4Mn0.Gq3v3oQ7-3t21E6HpaXXeJ6pcbYiSrfmaCGNGSirZXU';
-const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+// Supabase Configuration
+const SUPABASE_URL = "https://dansnpkegnrntnxwadbd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhbnNucGtlZ25ybnRueHdhZGJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2ODg3ODIsImV4cCI6MjA4MjI2NDc4Mn0.Gq3v3oQ7-3t21E6HpaXXeJ6pcbYiSrfmaCGNGSirZXU";
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const app = {
-    data: { vols: [], crit: [], ideas: [] },
-    async init() { await this.loadData(); },
-    async loadData() {
-        try {
-            const { data: v } = await supabase.from('volunteers').select('*');
-            const { data: c } = await supabase.from('criteria').select('*');
-            this.data.vols = v || [];
-            this.data.crit = c || [];
-            this.data.ideas = JSON.parse(localStorage.getItem('z_ideas_v3')) || [];
-            this.renderAll();
-        } catch(e) { console.error(e); }
+    data: {
+        vols: [],
+        crit: [],
+        ideas: []
     },
-    showPage(id, el) {
+
+    async init() {
+        document.getElementById('form-vol').addEventListener('submit', (e) => { e.preventDefault(); this.saveVol(); });
+        document.getElementById('form-crit').addEventListener('submit', (e) => { e.preventDefault(); this.saveCrit(); });
+
+        const { data: vols, error: volsError } = await db.from('vols').select('*').order('created_at', { ascending: false });
+        if (vols) this.data.vols = vols; else console.error(volsError);
+
+        const { data: crit, error: critError } = await db.from('crit').select('*').order('created_at', { ascending: false });
+        if (crit) this.data.crit = crit; else console.error(critError);
+
+        const { data: ideas, error: ideasError } = await db.from('ideas').select('*').order('created_at', { ascending: false });
+        if (ideas) this.data.ideas = ideas; else console.error(ideasError);
+        
+        this.renderAll();
+    },
+
+    showPage(id) {
         document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
         document.getElementById('page-'+id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        if(el) el.classList.add('active');
-    },
-    openModal(id, editId = null) {
-        if(id === 'modal-vol') {
-            const v = editId ? this.data.vols.find(x => x.id == editId) : null;
-            document.getElementById('v-id').value = v ? v.id : '';
-            document.getElementById('v-name').value = v ? v.name : '';
-            document.getElementById('v-phone').value = v ? (v.phone || '') : '';
-            document.getElementById('v-dob').value = v ? (v.dob || '') : '';
-            document.getElementById('v-age').value = v ? (v.age || '') : '';
-            document.getElementById('v-join').value = v ? (v.join || '') : '';
-            document.getElementById('v-role').value = v ? v.role : 'field';
-            document.getElementById('v-freeze').value = v ? (v.freeze || 'no') : 'no';
-            document.getElementById('modal-vol-title').innerText = v ? "تعديل بيانات المتطوع" : "إضافة متطوع جديد";
+        if (event.currentTarget) {
+            event.currentTarget.classList.add('active');
         }
-        if(id === 'modal-crit') {
-            const c = editId ? this.data.crit.find(x => x.id == editId) : null;
-            document.getElementById('c-id').value = c ? c.id : '';
-            document.getElementById('c-name').value = c ? c.name : '';
-            document.getElementById('c-type').value = c ? c.type : 'fixed';
-            document.getElementById('c-target').value = c ? c.target : 'all';
-            document.getElementById('c-weight').value = c ? c.weight : '';
+    },
+
+    openModal(id, editId = null) {
+        if (id === 'modal-vol') {
+            document.getElementById('form-vol').reset();
+            if (editId) {
+                const v = this.data.vols.find(x => x.id == editId);
+                if (v) {
+                    document.getElementById('v-id').value = v.id;
+                    document.getElementById('v-name').value = v.name;
+                    document.getElementById('v-phone').value = v.phone;
+                    document.getElementById('v-dob').value = v.dob;
+                    document.getElementById('v-age').value = v.age;
+                    document.getElementById('v-join').value = v.join;
+                    document.getElementById('v-role').value = v.role;
+                    document.getElementById('v-freeze').value = v.freeze;
+                    document.getElementById('modal-vol-title').innerText = "تعديل بيانات المتطوع";
+                }
+            } else {
+                document.getElementById('v-id').value = '';
+                document.getElementById('modal-vol-title').innerText = "إضافة متطوع جديد";
+            }
         }
         document.getElementById(id).style.display = 'flex';
     },
+
     closeModal(id) { document.getElementById(id).style.display = 'none'; },
+
     calcAge() {
         const dob = document.getElementById('v-dob').value;
         if(dob) document.getElementById('v-age').value = (new Date().getFullYear() - new Date(dob).getFullYear()) + " سنة";
     },
+
     async saveVol() {
         const id = document.getElementById('v-id').value;
-        const vol = { 
-            name: document.getElementById('v-name').value, 
+        const volData = {
+            name: document.getElementById('v-name').value,
             phone: document.getElementById('v-phone').value,
             dob: document.getElementById('v-dob').value,
-            role: document.getElementById('v-role').value, 
-            age: document.getElementById('v-age').value, 
-            freeze: document.getElementById('v-freeze').value, 
-            join: document.getElementById('v-join').value 
+            age: document.getElementById('v-age').value,
+            join: document.getElementById('v-join').value,
+            role: document.getElementById('v-role').value,
+            freeze: document.getElementById('v-freeze').value,
         };
-        if(id) await supabase.from('volunteers').update(vol).eq('id', id);
-        else await supabase.from('volunteers').insert([vol]);
-        await this.loadData(); this.closeModal('modal-vol');
+
+        let result;
+        if (id) {
+            result = await db.from('vols').update(volData).eq('id', id).select();
+        } else {
+            result = await db.from('vols').insert(volData).select();
+        }
+
+        const { data, error } = result;
+        if (error) {
+            console.error('Error saving volunteer:', error);
+            alert('حدث خطأ أثناء حفظ البيانات!');
+        } else {
+            await this.init();
+            this.closeModal('modal-vol');
+        }
     },
-    async deleteVol(id) {
-        if(confirm("حذف المتطوع؟")) { await supabase.from('volunteers').delete().eq('id', id); await this.loadData(); }
-    },
+
     async saveCrit() {
-        const id = document.getElementById('c-id').value;
-        const critObj = { name: document.getElementById('c-name').value, type: document.getElementById('c-type').value, target: document.getElementById('c-target').value, weight: parseInt(document.getElementById('c-weight').value) };
-        if(id) await supabase.from('criteria').update(critObj).eq('id', id);
-        else await supabase.from('criteria').insert([critObj]);
-        await this.loadData(); this.closeModal('modal-crit');
+        const critData = {
+            name: document.getElementById('c-name').value,
+            type: document.getElementById('c-type').value,
+            target: document.getElementById('c-target').value,
+            weight: parseInt(document.getElementById('c-weight').value)
+        };
+
+        const { data, error } = await db.from('crit').insert(critData).select();
+
+        if (error) {
+            console.error('Error saving criterion:', error);
+            alert('حدث خطأ أثناء حفظ المعيار!');
+        } else {
+            this.data.crit.push(data[0]);
+            this.renderAll();
+            this.closeModal('modal-crit');
+        }
     },
-    async deleteCrit(id) {
-        if(confirm("حذف المعيار؟")) { await supabase.from('criteria').delete().eq('id', id); await this.loadData(); }
-    },
+
     loadEvalFields() {
         const vId = document.getElementById('eval-vol-select').value;
         if(!vId) return document.getElementById('eval-form-body').style.display = 'none';
         const vol = this.data.vols.find(v => v.id == vId);
-        document.getElementById('vol-status-badge').innerHTML = `<span class="badge bg-fixed">${vol.role === 'lead' ? 'مسئول ملف' : 'ميداني'}</span>`;
+        
+        document.getElementById('vol-status-badge').innerHTML = `<span class="badge bg-fixed">${vol.role === 'lead' ? 'الدور الحالي: مسئول ملف' : 'الدور الحالي: متطوع ميداني'}</span>`;
+        
         let html = '';
         const types = {fixed:'📌 أساسي', variable:'🗓️ متغير', bonus:'⭐ بونص'};
         for(let t in types) {
             let filtered = this.data.crit.filter(c => c.type === t && (c.target === 'all' || (c.target === 'lead' && vol.role === 'lead')));
             if(filtered.length) {
-                html += `<h4 style="margin:10px 0">${types[t]}</h4><div class="grid-form">`;
-                filtered.forEach(c => { html += `<div><label>${c.name}</label><input type="number" class="sc-in" data-type="${t}" data-max="${c.weight}" value="0"></div>`; });
+                html += `<h4 style="margin:10px 0; color:var(--royal-green)">${types[t]}</h4><div class="grid-form">`;
+                filtered.forEach(c => {
+                    html += `<div><label>${c.name} (${c.weight})</label><input type="number" class="sc-in" data-type="${t}" data-max="${c.weight}" value="0"></div>`;
+                });
                 html += `</div>`;
             }
         }
         document.getElementById('dynamic-fields-container').innerHTML = html;
         document.getElementById('eval-form-body').style.display = 'block';
     },
-    generateReport() {
+
+    async generateReport() {
         const vId = document.getElementById('eval-vol-select').value;
         const vol = this.data.vols.find(v => v.id == vId);
         let score = 0, max = 0, bonus = 0;
@@ -269,30 +321,56 @@ const app = {
             if(i.dataset.type === 'bonus') bonus += v;
             else { score += v; max += parseFloat(i.dataset.max); }
         });
-        const pct = (((score+bonus)/max)*100).toFixed(1);
-        const idea = document.getElementById('eval-idea').value;
-        if(idea) { this.data.ideas.unshift({name: vol.name, text: idea, date: new Date().toLocaleDateString()}); localStorage.setItem('z_ideas_v3', JSON.stringify(this.data.ideas)); }
-        document.getElementById('report-output').innerHTML = `<div id="pdf-area"><h2>تقرير أداء: ${vol.name}</h2><h1>${pct}%</h1></div><button class="btn btn-primary" onclick="app.printPDF()">تحميل PDF</button>`;
-        document.getElementById('report-output').style.display = 'block';
-        this.renderAll();
-    },
-    printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('Report.pdf'); },
-    renderAll() {
-        let vHtml = `<table><tr><th>الاسم</th><th>الدور</th><th>إجراء</th></tr>`;
-        this.data.vols.forEach(v => { vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'👑':'👤'}</td><td><button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">✏️</button><button class="btn btn-danger" onclick="app.deleteVol('${v.id}')">🗑️</button></td></tr>`; });
-        document.getElementById('vols-table-container').innerHTML = vHtml + `</table>`;
+        const pct = (max > 0) ? (((score+bonus)/max)*100).toFixed(1) : 0;
+        const ideaText = document.getElementById('eval-idea').value;
         
-        let cHtml = `<table><tr><th>المعيار</th><th>الدرجة</th><th>إجراء</th></tr>`;
-        this.data.crit.forEach(c => { cHtml += `<tr><td>${c.name}</td><td>${c.weight}</td><td><button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button><button class="btn btn-danger" onclick="app.deleteCrit('${c.id}')">🗑️</button></td></tr>`; });
-        document.getElementById('crit-table-container').innerHTML = cHtml + `</table>`;
+        if(ideaText) {
+            const { data, error } = await db.from('ideas').insert({ name: vol.name, text: ideaText }).select();
+            if (error) console.error('Error saving idea:', error);
+            else this.data.ideas.unshift(data[0]);
+        }
+        
+        document.getElementById('report-output').innerHTML = `
+            <div id="pdf-area">
+                <h2 style="text-align:center; color:var(--royal-green)">تقرير أداء زاد</h2><hr><br>
+                <p><b>المتطوع:</b> ${vol.name} | <b>التاريخ:</b> ${new Date().toLocaleDateString()}</p>
+                <h1 style="color:var(--primary); text-align:center; margin:20px 0">${pct}%</h1>
+                <p style="background:#f0fdf4; padding:15px; border-radius:10px; border:1px dashed var(--primary)">
+                    <b>التحليل الإنساني:</b> ${pct >= 85 ? 'طاقة قيادية متميزة وأثر واضح.' : 'جهد طيب وننتظر المزيد من التألق.'}
+                </p>
+            </div>
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">تحميل PDF</button>
+        `;
+        document.getElementById('report-output').style.display = 'block';
+        await this.init();
+    },
 
+    printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
+
+    renderAll() {
+        let vHtml = `<table><thead><tr><th>الاسم</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody>`;
+        this.data.vols.forEach(v => {
+            vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'مسئول ملف':'ميداني'}</td><td>${v.freeze==='yes'?'❄️':'✅'}</td>
+            <td><button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل</button></td></tr>`;
+        });
+        document.getElementById('vols-table-container').innerHTML = vHtml + `</tbody></table>`;
+
+        let cHtml = `<table><thead><tr><th>المعيار</th><th>التصنيف</th><th>الفئة</th><th>الوزن</th></tr></thead><tbody>`;
+        this.data.crit.forEach(c => {
+            cHtml += `<tr><td>${c.name}</td><td><span class="badge bg-fixed">${c.type}</span></td><td>${c.target==='all'?'الكل':'المسئولين'}</td><td>${c.weight}</td></tr>`;
+        });
+        document.getElementById('crit-table-container').innerHTML = cHtml + `</tbody></table>`;
+
+        document.getElementById('eval-vol-select').innerHTML = '<option value="">-- اختر --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
+        
         document.getElementById('st-vols').innerText = this.data.vols.length;
         document.getElementById('st-leads').innerText = this.data.vols.filter(v => v.role === 'lead').length;
-        document.getElementById('eval-vol-select').innerHTML = '<option value="">-- اختر --</option>' + this.data.vols.map(v => `<option value="${v.id}">${v.name}</option>`).join('');
-        document.getElementById('last-idea').innerText = this.data.ideas[0] ? this.data.ideas[0].name + ": " + this.data.ideas[0].text : "لا يوجد أفكار";
-        document.getElementById('ideas-container').innerHTML = this.data.ideas.map(i => `<div class="box"><b>${i.name}:</b> ${i.text}</div>`).join('');
+        
+        document.getElementById('last-idea').innerText = this.data.ideas[0] ? `${this.data.ideas[0].name}: ${this.data.ideas[0].text}` : "لا يوجد أفكار مسجلة";
+        document.getElementById('ideas-container').innerHTML = this.data.ideas.map(i => `<div class="box"><b>${i.name}:</b> ${i.text} <small style="float:left">${new Date(i.created_at).toLocaleDateString()}</small></div>`).join('');
     }
 };
+
 app.init();
 </script>
 </body>
