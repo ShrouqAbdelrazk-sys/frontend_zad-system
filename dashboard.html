@@ -6,6 +6,7 @@
     <title>ZAD Altimate | Pro Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
@@ -162,23 +163,28 @@
 </div>
 
 <script>
+// إعداد الربط بالسحابة
+const SB_URL = 'https://dansnpkegnrntnxwadbd.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRhbnNucGtlZ25ybnRueHdhZGJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2ODg3ODIsImV4cCI6MjA4MjI2NDc4Mn0.Gq3v3oQ7-3t21E6HpaXXeJ6pcbYiSrfmaCGNGSirZXU';
+const supabase = window.supabase.createClient(SB_URL, SB_KEY);
+
 const app = {
-    data: {
-        vols: JSON.parse(localStorage.getItem('z_vols_v3')) || [],
-        crit: JSON.parse(localStorage.getItem('z_crit_v3')) || [
-            {id:1, name:'المشاركة الميدانية', type:'fixed', target:'all', weight:20},
-            {id:2, name:'إدارة المهام', type:'fixed', target:'lead', weight:20}
-        ],
-        evals: JSON.parse(localStorage.getItem('z_evals_v3')) || [],
-        ideas: JSON.parse(localStorage.getItem('z_ideas_v3')) || []
+    data: { vols: [], crit: [], evals: [], ideas: [] },
+
+    async init() { 
+        await this.loadData();
+        this.renderAll(); 
     },
 
-    init() { this.renderAll(); },
+    async loadData() {
+        const { data: v } = await supabase.from('volunteers').select('*');
+        const { data: c } = await supabase.from('criteria').select('*');
+        this.data.vols = v || [];
+        this.data.crit = c || [];
+        this.data.ideas = JSON.parse(localStorage.getItem('z_ideas_v3')) || [];
+    },
 
-    save() {
-        localStorage.setItem('z_vols_v3', JSON.stringify(this.data.vols));
-        localStorage.setItem('z_crit_v3', JSON.stringify(this.data.crit));
-        localStorage.setItem('z_evals_v3', JSON.stringify(this.data.evals));
+    saveLocal() {
         localStorage.setItem('z_ideas_v3', JSON.stringify(this.data.ideas));
     },
 
@@ -203,8 +209,6 @@ const app = {
                 document.getElementById('modal-vol-title').innerText = "إضافة متطوع جديد";
             }
         }
-        
-        // تعديل المعيار
         if(id === 'modal-crit') {
             if(editId) {
                 const c = this.data.crit.find(x => x.id == editId);
@@ -230,10 +234,9 @@ const app = {
         if(dob) document.getElementById('v-age').value = (new Date().getFullYear() - new Date(dob).getFullYear()) + " سنة";
     },
 
-    saveVol() {
+    async saveVol() {
         const id = document.getElementById('v-id').value;
         const vol = {
-            id: id || Date.now(),
             name: document.getElementById('v-name').value,
             role: document.getElementById('v-role').value,
             age: document.getElementById('v-age').value,
@@ -241,38 +244,40 @@ const app = {
             join: document.getElementById('v-join').value
         };
         if(id) {
-            const index = this.data.vols.findIndex(x => x.id == id);
-            this.data.vols[index] = vol;
+            await supabase.from('volunteers').update(vol).eq('id', id);
         } else {
-            this.data.vols.push(vol);
+            await supabase.from('volunteers').insert([vol]);
         }
-        this.save(); this.renderAll(); this.closeModal('modal-vol');
+        await this.init(); this.closeModal('modal-vol');
     },
 
-    saveCrit() {
+    async deleteVol(id) {
+        if(confirm("هل تريد حذف هذا المتطوع؟")) {
+            await supabase.from('volunteers').delete().eq('id', id);
+            await this.init();
+        }
+    },
+
+    async saveCrit() {
         const id = document.getElementById('c-id').value;
         const critObj = {
-            id: id ? parseInt(id) : Date.now(),
             name: document.getElementById('c-name').value,
             type: document.getElementById('c-type').value,
             target: document.getElementById('c-target').value,
             weight: parseInt(document.getElementById('c-weight').value)
         };
-
         if(id) {
-            const index = this.data.crit.findIndex(x => x.id == id);
-            this.data.crit[index] = critObj;
+            await supabase.from('criteria').update(critObj).eq('id', id);
         } else {
-            this.data.crit.push(critObj);
+            await supabase.from('criteria').insert([critObj]);
         }
-
-        this.save(); this.renderAll(); this.closeModal('modal-crit');
+        await this.init(); this.closeModal('modal-crit');
     },
 
-    deleteCrit(id) {
+    async deleteCrit(id) {
         if(confirm("هل تريد حذف هذا المعيار؟")) {
-            this.data.crit = this.data.crit.filter(c => c.id != id);
-            this.save(); this.renderAll();
+            await supabase.from('criteria').delete().eq('id', id);
+            await this.init();
         }
     },
 
@@ -310,7 +315,10 @@ const app = {
         });
         const pct = (((score+bonus)/max)*100).toFixed(1);
         const idea = document.getElementById('eval-idea').value;
-        if(idea) this.data.ideas.unshift({name: vol.name, text: idea, date: new Date().toLocaleDateString()});
+        if(idea) {
+            this.data.ideas.unshift({name: vol.name, text: idea, date: new Date().toLocaleDateString()});
+            this.saveLocal();
+        }
         
         document.getElementById('report-output').innerHTML = `
             <div id="pdf-area">
@@ -324,7 +332,7 @@ const app = {
             <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">تحميل PDF</button>
         `;
         document.getElementById('report-output').style.display = 'block';
-        this.save(); this.renderAll();
+        this.renderAll();
     },
 
     printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
@@ -333,7 +341,10 @@ const app = {
         let vHtml = `<table><tr><th>الاسم</th><th>الدور</th><th>الحالة</th><th>إجراء</th></tr>`;
         this.data.vols.forEach(v => {
             vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'مسئول ملف':'ميداني'}</td><td>${v.freeze==='yes'?'❄️':'✅'}</td>
-            <td><button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل</button></td></tr>`;
+            <td>
+                <button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل</button>
+                <button class="btn btn-danger" onclick="app.deleteVol(${v.id})">حذف 🗑️</button>
+            </td></tr>`;
         });
         document.getElementById('vols-table-container').innerHTML = vHtml + `</table>`;
 
