@@ -342,8 +342,8 @@ const app = {
         this.data.vols.forEach(v => {
             vHtml += `<tr><td><b>${v.name}</b></td><td>${v.role==='lead'?'مسئول ملف':'ميداني'}</td><td>${v.freeze==='yes'?'❄️':'✅'}</td>
             <td>
-                <button class="btn btn-edit" onclick="app.openModal('modal-vol', ${v.id})">تعديل</button>
-                <button class="btn btn-danger" onclick="app.deleteVol(${v.id})">حذف 🗑️</button>
+                <button class="btn btn-edit" onclick="app.openModal('modal-vol', '${v.id}')">تعديل</button>
+                <button class="btn btn-danger" onclick="app.deleteVol('${v.id}')">حذف 🗑️</button>
             </td></tr>`;
         });
         document.getElementById('vols-table-container').innerHTML = vHtml + `</table>`;
@@ -355,7 +355,7 @@ const app = {
                 <td><span class="badge bg-fixed">${c.type}</span></td>
                 <td>${c.target==='all'?'الكل':'المسئولين'}</td>
                 <td>
-                    <button class="btn btn-edit" onclick="app.openModal('modal-crit', ${c.id})">✏️</button>
+                    <button class="btn btn-edit" onclick="app.openModal('modal-crit', '${c.id}')">✏️</button>
                     <button class="btn btn-danger" onclick="app.deleteCrit('${c.id}')">🗑️</button>
                 </td>
             </tr>`;
