@@ -356,7 +356,7 @@ const app = {
                 <td>${c.target==='all'?'الكل':'المسئولين'}</td>
                 <td>
                     <button class="btn btn-edit" onclick="app.openModal('modal-crit', ${c.id})">✏️</button>
-                    <button class="btn btn-danger" onclick="app.deleteCrit(${c.id})">🗑️</button>
+                    <button class="btn btn-danger" onclick="app.deleteCrit('${c.id}')">🗑️</button>
                 </td>
             </tr>`;
         });
