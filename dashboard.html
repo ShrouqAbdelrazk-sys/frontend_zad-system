@@ -215,16 +215,33 @@ const app = {
         document.getElementById('v-id').value = '';
         document.getElementById('c-id').value = '';
     },
-    async saveVol() {
+   async saveVol() {
+        // 1. بناخد البيانات من الخانات اللي قدامك في الشاشة
         const id = document.getElementById('v-id').value;
         const payload = {
             name: document.getElementById('v-name').value,
             phone: document.getElementById('v-phone').value,
-            join_date: document.getElementById('v-join-date').value,
+            join_date: document.getElementById('v-join-date').value || null, 
             role: document.getElementById('v-role').value,
             freeze: document.getElementById('v-freeze').value,
             freeze_count: parseInt(document.getElementById('v-freeze-count').value) || 0
         };
+
+        // 2. بنبعت البيانات لـ Supabase وبنستنى الرد
+        const { error } = id 
+            ? await db.from('volunteers').update(payload).eq('id', id)
+            : await db.from('volunteers').insert([payload]);
+
+        // 3. بنشوف الرد.. لو فيه غلط بنطلعه في رسالة واضحة
+        if (error) {
+            alert("فيه مشكلة في الداتا بيز: " + error.message);
+        } else {
+            // لو مفيش غلط، بنحدث الجدول فوراً ونقفل الشاشة
+            alert("مبروك.. اتحفظت بنجاح! ✅");
+            this.init(); 
+            this.closeModal('modal-vol');
+        }
+    },
         if(id) await db.from('volunteers').update(payload).eq('id', id);
         else await db.from('volunteers').insert([payload]);
         this.init(); this.closeModal('modal-vol');
