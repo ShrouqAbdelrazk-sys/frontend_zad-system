@@ -57,6 +57,7 @@
     <div id="page-dash" class="page-section active">
         <div class="header">
             <h1 class="page-title">لوحة القيادة</h1>
+            <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button>
         </div>
         <div class="stats-grid">
             <div class="stat-card"><h3>إجمالي المتطوعين</h3><div class="val" id="st-vols">0</div></div>
@@ -67,10 +68,7 @@
     </div>
 
     <div id="page-vols" class="page-section">
-        <div class="header">
-            <h1 class="page-title">إدارة بيانات زادي</h1>
-            <button class="btn btn-primary" onclick="app.openModal('modal-vol')">+ إضافة متطوع جديد</button>
-        </div>
+        <div class="header"><h1 class="page-title">إدارة بيانات زادي</h1></div>
         <div class="box" id="vols-table-container"></div>
     </div>
 
@@ -95,10 +93,7 @@
     </div>
 
     <div id="page-crit" class="page-section">
-        <div class="header">
-            <h1 class="page-title">المعايير والفئات</h1> 
-            <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة معيار جديد</button>
-        </div>
+        <div class="header"><h1 class="page-title">المعايير والفئات</h1> <button class="btn btn-primary" onclick="app.openModal('modal-crit')">إضافة معيار جديد</button></div>
         <div class="box"><div id="crit-table-container"></div></div>
     </div>
 
@@ -212,39 +207,22 @@ const app = {
     closeModal(mid) {
         document.getElementById(mid).style.display = 'none';
         document.querySelectorAll(`${mid} input, ${mid} textarea`).forEach(i => i.value='');
-        document.getElementById('v-id').value = '';
-        document.getElementById('c-id').value = '';
     },
-   async saveVol() {
-        // 1. بناخد البيانات من الخانات اللي قدامك في الشاشة
+    async saveVol() {
         const id = document.getElementById('v-id').value;
         const payload = {
             name: document.getElementById('v-name').value,
             phone: document.getElementById('v-phone').value,
-            join_date: document.getElementById('v-join-date').value || null, 
+            join_date: document.getElementById('v-join-date').value || null,
             role: document.getElementById('v-role').value,
             freeze: document.getElementById('v-freeze').value,
             freeze_count: parseInt(document.getElementById('v-freeze-count').value) || 0
         };
-
-        // 2. بنبعت البيانات لـ Supabase وبنستنى الرد
-        const { error } = id 
-            ? await db.from('volunteers').update(payload).eq('id', id)
-            : await db.from('volunteers').insert([payload]);
-
-        // 3. بنشوف الرد.. لو فيه غلط بنطلعه في رسالة واضحة
-        if (error) {
-            alert("فيه مشكلة في الداتا بيز: " + error.message);
-        } else {
-            // لو مفيش غلط، بنحدث الجدول فوراً ونقفل الشاشة
-            alert("مبروك.. اتحفظت بنجاح! ✅");
-            this.init(); 
-            this.closeModal('modal-vol');
-        }
-    },
         if(id) await db.from('volunteers').update(payload).eq('id', id);
         else await db.from('volunteers').insert([payload]);
-        this.init(); this.closeModal('modal-vol');
+        // التعديل هنا لضمان التحديث
+        await this.init(); 
+        this.closeModal('modal-vol');
     },
     async saveCrit() {
         const id = document.getElementById('c-id').value;
@@ -256,7 +234,9 @@ const app = {
         };
         if(id) await db.from('criteria').update(payload).eq('id', id);
         else await db.from('criteria').insert([payload]);
-        this.init(); this.closeModal('modal-crit');
+        // التعديل هنا لضمان التحديث
+        await this.init(); 
+        this.closeModal('modal-crit');
     },
     loadEvalFields() {
         const vId = document.getElementById('eval-vol-select').value;
@@ -270,11 +250,9 @@ const app = {
             {n: 'التفاعل على الجروب', w: 6}
         ];
         base.forEach(c => html += `<div><label>${c.n}</label><input type="number" class="sc-in" data-max="${c.w}" value="0"></div>`);
-        
-        // المضافة مع الوصف
         this.data.crit.forEach(c => {
             if(c.type === 'lead' && vol.role !== 'lead') return;
-            html += `<div><label>${c.name} <small style="color:#64748b; font-weight:normal; display:block;">(${c.description || 'لا يوجد وصف'})</small></label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
+            html += `<div><label>${c.name} <small style="color:#64748b; font-weight:normal;">(${c.description || ''})</small></label><input type="number" class="sc-in" data-max="${c.weight}" value="0"></div>`;
         });
         document.getElementById('dynamic-fields-container').innerHTML = html + '</div>';
         document.getElementById('eval-form-body').style.display = 'block';
@@ -299,12 +277,12 @@ const app = {
             <div id="pdf-area" style="padding:40px; border: 4px solid var(--secondary); border-radius:15px; background:#fff; direction:rtl;">
                 <h1 style="text-align:center; color:var(--secondary)">بطاقة أداء زادي 🌿</h1>
                 <p style="text-align:center; color:var(--primary)">${new Date().toLocaleDateString('ar-EG')}</p>
-                <div style="font-size:18px; margin-top:20px"><b>الزادي:</b> ${vol.name} | <b>النسبة النهائية:</b> ${pct}%</div>
+                <div style="font-size:18px; margin-top:20px"><b>الزادي:</b> ${vol.name} | <b>النسبة:</b> ${pct}%</div>
                 <hr style="margin:20px 0">
                 <p><b>🌟 نقاط التميز:</b> ${strengths.join(' - ') || 'قيد الرصد'}</p>
                 <p><b>⚠️ مجالات التطوير:</b> ${weaknesses.join(' - ') || 'لا يوجد'}</p>
             </div>
-            <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 تحميل PDF التقرير</button> `;
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" onclick="app.printPDF()">💾 تحميل PDF</button> `;
         document.getElementById('report-output').style.display = 'block';
     },
     printPDF() { html2pdf().from(document.getElementById('pdf-area')).save('ZAD_Report.pdf'); },
@@ -331,7 +309,7 @@ const app = {
         this.data.ideas.forEach(i => { html += `<div class="idea-card"><div><b>${i.name}:</b> ${i.text}</div></div>`; });
         document.getElementById('ideas-container').innerHTML = html || 'لا توجد أفكار.';
     },
-    async deleteItem(table, id) { if(confirm("هل أنت متأكد من الحذف؟")) { await db.from(table).delete().eq('id', id); this.init(); } },
+    async deleteItem(table, id) { if(confirm("حذف؟")) { await db.from(table).delete().eq('id', id); await this.init(); } },
     updateStats() {
         document.getElementById('st-vols').innerText = this.data.vols.length;
         document.getElementById('st-freeze').innerText = this.data.vols.filter(v => v.freeze === 'yes').length;
